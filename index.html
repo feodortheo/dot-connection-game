@@ -746,24 +746,25 @@
             justify-content: center;
         }
 
-        .camera-btn, .gallery-btn {
+        .photo-btn {
             background-color: #ff69b4;
             color: white;
             border: none;
-            padding: 8px 16px;
+            padding: 10px 20px;
             border-radius: 8px;
             cursor: pointer;
-            font-size: 14px;
+            font-size: 16px;
             font-weight: bold;
             transition: all 0.3s ease;
+            width: 100%;
         }
 
-        .camera-btn:hover, .gallery-btn:hover {
+        .photo-btn:hover {
             background-color: #ff1493;
             transform: translateY(-2px);
         }
 
-        .camera-btn:active, .gallery-btn:active {
+        .photo-btn:active {
             transform: translateY(0);
         }
 
@@ -1032,8 +1033,7 @@
                     <input type="file" id="fighter1" class="fighter-input" accept="image/*" onchange="handleFighterUpload(1, this)">
                     <input type="text" id="name1" class="fighter-name-input" placeholder="Введите имя" onchange="updateFighterName(1, this)">
                     <div class="camera-buttons">
-                        <button type="button" class="camera-btn" onclick="openCamera(1)">📷 Сделать фото</button>
-                        <button type="button" class="gallery-btn" onclick="openGallery(1)">🖼️ Из галереи</button>
+                        <button type="button" class="photo-btn" onclick="openPhotoOptions(1)">📸 Выбрать фото</button>
                     </div>
                 </div>
                 <div class="fighter-input-group">
@@ -1041,8 +1041,7 @@
                     <input type="file" id="fighter2" class="fighter-input" accept="image/*" onchange="handleFighterUpload(2, this)">
                     <input type="text" id="name2" class="fighter-name-input" placeholder="Введите имя" onchange="updateFighterName(2, this)">
                     <div class="camera-buttons">
-                        <button type="button" class="camera-btn" onclick="openCamera(2)">📷 Сделать фото</button>
-                        <button type="button" class="gallery-btn" onclick="openGallery(2)">🖼️ Из галереи</button>
+                        <button type="button" class="photo-btn" onclick="openPhotoOptions(2)">📸 Выбрать фото</button>
                     </div>
                 </div>
             </div>
@@ -1765,28 +1764,12 @@
             checkFightersReady();
         }
 
-        function openCamera(fighterNumber) {
-            // Create a file input with camera capture
+        function openPhotoOptions(fighterNumber) {
+            // Create a file input that will show native iOS/Android photo options
             const input = document.createElement('input');
             input.type = 'file';
             input.accept = 'image/*';
-            input.capture = 'environment'; // Use back camera on mobile
-            
-            input.onchange = function(event) {
-                if (event.target.files && event.target.files[0]) {
-                    handleFighterUpload(fighterNumber, event.target);
-                }
-            };
-            
-            input.click();
-        }
-
-        function openGallery(fighterNumber) {
-            // Create a file input for gallery selection
-            const input = document.createElement('input');
-            input.type = 'file';
-            input.accept = 'image/*';
-            input.multiple = false; // Allow only one file
+            input.capture = 'environment'; // This enables camera option on mobile
             
             input.onchange = function(event) {
                 if (event.target.files && event.target.files[0]) {
