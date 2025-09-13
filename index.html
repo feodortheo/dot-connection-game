@@ -43,7 +43,7 @@
             margin-bottom: 50px;
         }
 
-        .dot {
+        . dot {
             position: absolute;
             width: 20px;
             height: 20px;
@@ -1091,6 +1091,89 @@
             display: none;
         }
 
+        /* Music Player */
+        .music-player {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            border: 2px solid #ff69b4;
+            border-radius: 15px;
+            padding: 10px;
+            z-index: 2000;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 0 20px rgba(255, 105, 180, 0.3);
+        }
+
+        .music-controls {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .music-btn {
+            background: #ff69b4;
+            border: none;
+            border-radius: 50%;
+            width: 35px;
+            height: 35px;
+            color: white;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .music-btn:hover {
+            background: #ff1493;
+            transform: scale(1.1);
+            box-shadow: 0 0 10px rgba(255, 105, 180, 0.5);
+        }
+
+        .track-info {
+            display: flex;
+            flex-direction: column;
+            margin-left: 8px;
+            color: white;
+            font-size: 12px;
+            min-width: 100px;
+        }
+
+        #trackTitle {
+            font-weight: bold;
+            color: #ff69b4;
+        }
+
+        #trackNumber {
+            font-size: 10px;
+            opacity: 0.8;
+        }
+
+        @media (max-width: 768px) {
+            .music-player {
+                top: 10px;
+                right: 10px;
+                padding: 8px;
+            }
+            
+            .music-btn {
+                width: 30px;
+                height: 30px;
+                font-size: 12px;
+            }
+            
+            .track-info {
+                font-size: 10px;
+                min-width: 80px;
+            }
+            
+            #trackNumber {
+                font-size: 9px;
+            }
+        }
+
         /* End Screen */
         .end-screen {
             position: fixed;
@@ -1134,6 +1217,19 @@
         <source src="https://www.bensound.com/bensound-music/bensound-pianomoment.ogg" type="audio/ogg">
         Your browser does not support the audio element.
     </audio>
+    
+    <!-- Music Player -->
+    <div id="musicPlayer" class="music-player">
+        <div class="music-controls">
+            <button id="prevTrack" class="music-btn">⏮</button>
+            <button id="playPause" class="music-btn">▶</button>
+            <button id="nextTrack" class="music-btn">⏭</button>
+            <div class="track-info">
+                <span id="trackTitle">Piano Moment</span>
+                <span id="trackNumber">1 / 10</span>
+            </div>
+        </div>
+    </div>
     
     <!-- Welcome Screen -->
     <div class="welcome-screen" id="welcomeScreen">
@@ -1214,14 +1310,95 @@
         // Background Music Setup
         document.addEventListener('DOMContentLoaded', function() {
             const backgroundMusic = document.getElementById('backgroundMusic');
+            const playPauseBtn = document.getElementById('playPause');
+            const prevTrackBtn = document.getElementById('prevTrack');
+            const nextTrackBtn = document.getElementById('nextTrack');
+            const trackTitle = document.getElementById('trackTitle');
+            const trackNumber = document.getElementById('trackNumber');
+            
+            // Romantic and relaxing music tracks
+            const musicTracks = [
+                { title: "Piano Moment", url: "https://www.bensound.com/bensound-music/bensound-pianomoment.mp3" },
+                { title: "Romantic Dreams", url: "https://www.bensound.com/bensound-music/bensound-romantic.mp3" },
+                { title: "Sunny Days", url: "https://www.bensound.com/bensound-music/bensound-sunny.mp3" },
+                { title: "Love Story", url: "https://www.bensound.com/bensound-music/bensound-love.mp3" },
+                { title: "Peaceful Mind", url: "https://www.bensound.com/bensound-music/bensound-peaceful.mp3" },
+                { title: "Gentle Breeze", url: "https://www.bensound.com/bensound-music/bensound-gentle.mp3" },
+                { title: "Sweet Dreams", url: "https://www.bensound.com/bensound-music/bensound-sweet.mp3" },
+                { title: "Tender Moments", url: "https://www.bensound.com/bensound-music/bensound-tender.mp3" },
+                { title: "Soft Whisper", url: "https://www.bensound.com/bensound-music/bensound-soft.mp3" },
+                { title: "Heart Strings", url: "https://www.bensound.com/bensound-music/bensound-heart.mp3" }
+            ];
+            
+            let currentTrackIndex = 0;
+            let isPlaying = false;
+            
+            // Load current track
+            function loadTrack(index) {
+                const track = musicTracks[index];
+                backgroundMusic.src = track.url;
+                trackTitle.textContent = track.title;
+                trackNumber.textContent = `${index + 1} / ${musicTracks.length}`;
+            }
+            
+            // Play music
+            function playMusic() {
+                backgroundMusic.volume = 0.15;
+                backgroundMusic.play().then(() => {
+                    isPlaying = true;
+                    playPauseBtn.textContent = '⏸';
+                }).catch(function(error) {
+                    console.log('Play prevented:', error);
+                });
+            }
+            
+            // Pause music
+            function pauseMusic() {
+                backgroundMusic.pause();
+                isPlaying = false;
+                playPauseBtn.textContent = '▶';
+            }
+            
+            // Next track
+            function nextTrack() {
+                currentTrackIndex = (currentTrackIndex + 1) % musicTracks.length;
+                loadTrack(currentTrackIndex);
+                if (isPlaying) {
+                    playMusic();
+                }
+            }
+            
+            // Previous track
+            function prevTrack() {
+                currentTrackIndex = (currentTrackIndex - 1 + musicTracks.length) % musicTracks.length;
+                loadTrack(currentTrackIndex);
+                if (isPlaying) {
+                    playMusic();
+                }
+            }
+            
+            // Event listeners
+            playPauseBtn.addEventListener('click', function() {
+                if (isPlaying) {
+                    pauseMusic();
+                } else {
+                    playMusic();
+                }
+            });
+            
+            nextTrackBtn.addEventListener('click', nextTrack);
+            prevTrackBtn.addEventListener('click', prevTrack);
+            
+            // Auto play next track when current ends
+            backgroundMusic.addEventListener('ended', nextTrack);
+            
+            // Initialize with first track
+            loadTrack(0);
             
             // Try to play music when user first interacts with the page
             function playBackgroundMusic() {
-                if (backgroundMusic) {
-                    backgroundMusic.volume = 0.15; // Set volume to 15% for more relaxing experience
-                    backgroundMusic.play().catch(function(error) {
-                        console.log('Autoplay prevented:', error);
-                    });
+                if (!isPlaying) {
+                    playMusic();
                 }
             }
             
