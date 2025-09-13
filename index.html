@@ -1118,7 +1118,7 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            font-size: 24px;
+            font-size: 32px;
             color: #ff69b4;
             transition: all 0.3s ease;
         }
@@ -1187,7 +1187,7 @@
             }
             
             .music-icon {
-                font-size: 20px;
+                font-size: 28px;
             }
             
             .music-btn {
@@ -1349,7 +1349,7 @@
             const trackTitle = document.getElementById('trackTitle');
             const trackNumber = document.getElementById('trackNumber');
             
-            // Romantic and relaxing music tracks (50 tracks)
+            // Romantic and happy music tracks (50 tracks)
             const musicTracks = [
                 { title: "Piano Moment", url: "https://www.bensound.com/bensound-music/bensound-pianomoment.mp3" },
                 { title: "Romantic Dreams", url: "https://www.bensound.com/bensound-music/bensound-romantic.mp3" },
@@ -1361,47 +1361,47 @@
                 { title: "Tender Moments", url: "https://www.bensound.com/bensound-music/bensound-tender.mp3" },
                 { title: "Soft Whisper", url: "https://www.bensound.com/bensound-music/bensound-soft.mp3" },
                 { title: "Heart Strings", url: "https://www.bensound.com/bensound-music/bensound-heart.mp3" },
-                { title: "Moonlight Sonata", url: "https://www.bensound.com/bensound-music/bensound-moonlight.mp3" },
-                { title: "Ocean Waves", url: "https://www.bensound.com/bensound-music/bensound-ocean.mp3" },
-                { title: "Forest Whispers", url: "https://www.bensound.com/bensound-music/bensound-forest.mp3" },
-                { title: "Morning Dew", url: "https://www.bensound.com/bensound-music/bensound-morning.mp3" },
-                { title: "Evening Stars", url: "https://www.bensound.com/bensound-music/bensound-evening.mp3" },
-                { title: "Spring Rain", url: "https://www.bensound.com/bensound-music/bensound-spring.mp3" },
-                { title: "Summer Breeze", url: "https://www.bensound.com/bensound-music/bensound-summer.mp3" },
-                { title: "Autumn Leaves", url: "https://www.bensound.com/bensound-music/bensound-autumn.mp3" },
-                { title: "Winter Snow", url: "https://www.bensound.com/bensound-music/bensound-winter.mp3" },
-                { title: "Crystal Clear", url: "https://www.bensound.com/bensound-music/bensound-crystal.mp3" },
+                { title: "Moonlight Romance", url: "https://www.bensound.com/bensound-music/bensound-moonlight.mp3" },
+                { title: "Ocean Serenity", url: "https://www.bensound.com/bensound-music/bensound-ocean.mp3" },
+                { title: "Forest Harmony", url: "https://www.bensound.com/bensound-music/bensound-forest.mp3" },
+                { title: "Morning Joy", url: "https://www.bensound.com/bensound-music/bensound-morning.mp3" },
+                { title: "Evening Romance", url: "https://www.bensound.com/bensound-music/bensound-evening.mp3" },
+                { title: "Spring Love", url: "https://www.bensound.com/bensound-music/bensound-spring.mp3" },
+                { title: "Summer Romance", url: "https://www.bensound.com/bensound-music/bensound-summer.mp3" },
+                { title: "Golden Autumn", url: "https://www.bensound.com/bensound-music/bensound-autumn.mp3" },
+                { title: "Winter Wonder", url: "https://www.bensound.com/bensound-music/bensound-winter.mp3" },
+                { title: "Crystal Love", url: "https://www.bensound.com/bensound-music/bensound-crystal.mp3" },
                 { title: "Golden Hour", url: "https://www.bensound.com/bensound-music/bensound-golden.mp3" },
-                { title: "Silver Lining", url: "https://www.bensound.com/bensound-music/bensound-silver.mp3" },
-                { title: "Purple Haze", url: "https://www.bensound.com/bensound-music/bensound-purple.mp3" },
-                { title: "Blue Skies", url: "https://www.bensound.com/bensound-music/bensound-blue.mp3" },
-                { title: "Green Fields", url: "https://www.bensound.com/bensound-music/bensound-green.mp3" },
-                { title: "Red Roses", url: "https://www.bensound.com/bensound-music/bensound-red.mp3" },
-                { title: "White Clouds", url: "https://www.bensound.com/bensound-music/bensound-white.mp3" },
-                { title: "Black Velvet", url: "https://www.bensound.com/bensound-music/bensound-black.mp3" },
-                { title: "Pink Blossoms", url: "https://www.bensound.com/bensound-music/bensound-pink.mp3" },
-                { title: "Orange Sunset", url: "https://www.bensound.com/bensound-music/bensound-orange.mp3" },
-                { title: "Yellow Sunshine", url: "https://www.bensound.com/bensound-music/bensound-yellow.mp3" },
-                { title: "Indigo Night", url: "https://www.bensound.com/bensound-music/bensound-indigo.mp3" },
-                { title: "Turquoise Dreams", url: "https://www.bensound.com/bensound-music/bensound-turquoise.mp3" },
-                { title: "Coral Reef", url: "https://www.bensound.com/bensound-music/bensound-coral.mp3" },
-                { title: "Lavender Fields", url: "https://www.bensound.com/bensound-music/bensound-lavender.mp3" },
-                { title: "Mint Fresh", url: "https://www.bensound.com/bensound-music/bensound-mint.mp3" },
-                { title: "Peach Blossom", url: "https://www.bensound.com/bensound-music/bensound-peach.mp3" },
+                { title: "Silver Romance", url: "https://www.bensound.com/bensound-music/bensound-silver.mp3" },
+                { title: "Purple Passion", url: "https://www.bensound.com/bensound-music/bensound-purple.mp3" },
+                { title: "Blue Romance", url: "https://www.bensound.com/bensound-music/bensound-blue.mp3" },
+                { title: "Green Paradise", url: "https://www.bensound.com/bensound-music/bensound-green.mp3" },
+                { title: "Red Passion", url: "https://www.bensound.com/bensound-music/bensound-red.mp3" },
+                { title: "White Romance", url: "https://www.bensound.com/bensound-music/bensound-white.mp3" },
+                { title: "Elegant Love", url: "https://www.bensound.com/bensound-music/bensound-black.mp3" },
+                { title: "Pink Romance", url: "https://www.bensound.com/bensound-music/bensound-pink.mp3" },
+                { title: "Orange Joy", url: "https://www.bensound.com/bensound-music/bensound-orange.mp3" },
+                { title: "Yellow Happiness", url: "https://www.bensound.com/bensound-music/bensound-yellow.mp3" },
+                { title: "Indigo Romance", url: "https://www.bensound.com/bensound-music/bensound-indigo.mp3" },
+                { title: "Turquoise Love", url: "https://www.bensound.com/bensound-music/bensound-turquoise.mp3" },
+                { title: "Coral Romance", url: "https://www.bensound.com/bensound-music/bensound-coral.mp3" },
+                { title: "Lavender Love", url: "https://www.bensound.com/bensound-music/bensound-lavender.mp3" },
+                { title: "Mint Fresh Love", url: "https://www.bensound.com/bensound-music/bensound-mint.mp3" },
+                { title: "Peach Romance", url: "https://www.bensound.com/bensound-music/bensound-peach.mp3" },
                 { title: "Rose Garden", url: "https://www.bensound.com/bensound-music/bensound-rose.mp3" },
-                { title: "Lily Pond", url: "https://www.bensound.com/bensound-music/bensound-lily.mp3" },
-                { title: "Daisy Chain", url: "https://www.bensound.com/bensound-music/bensound-daisy.mp3" },
-                { title: "Tulip Fields", url: "https://www.bensound.com/bensound-music/bensound-tulip.mp3" },
-                { title: "Sunflower Valley", url: "https://www.bensound.com/bensound-music/bensound-sunflower.mp3" },
-                { title: "Orchid Garden", url: "https://www.bensound.com/bensound-music/bensound-orchid.mp3" },
-                { title: "Jasmine Tea", url: "https://www.bensound.com/bensound-music/bensound-jasmine.mp3" },
-                { title: "Lotus Pond", url: "https://www.bensound.com/bensound-music/bensound-lotus.mp3" },
-                { title: "Magnolia Tree", url: "https://www.bensound.com/bensound-music/bensound-magnolia.mp3" },
-                { title: "Cherry Blossom", url: "https://www.bensound.com/bensound-music/bensound-cherry.mp3" },
-                { title: "Apple Orchard", url: "https://www.bensound.com/bensound-music/bensound-apple.mp3" },
-                { title: "Pear Tree", url: "https://www.bensound.com/bensound-music/bensound-pear.mp3" },
-                { title: "Plum Garden", url: "https://www.bensound.com/bensound-music/bensound-plum.mp3" },
-                { title: "Grape Vine", url: "https://www.bensound.com/bensound-music/bensound-grape.mp3" }
+                { title: "Lily Love", url: "https://www.bensound.com/bensound-music/bensound-lily.mp3" },
+                { title: "Daisy Romance", url: "https://www.bensound.com/bensound-music/bensound-daisy.mp3" },
+                { title: "Tulip Love", url: "https://www.bensound.com/bensound-music/bensound-tulip.mp3" },
+                { title: "Sunflower Joy", url: "https://www.bensound.com/bensound-music/bensound-sunflower.mp3" },
+                { title: "Orchid Romance", url: "https://www.bensound.com/bensound-music/bensound-orchid.mp3" },
+                { title: "Jasmine Love", url: "https://www.bensound.com/bensound-music/bensound-jasmine.mp3" },
+                { title: "Lotus Romance", url: "https://www.bensound.com/bensound-music/bensound-lotus.mp3" },
+                { title: "Magnolia Love", url: "https://www.bensound.com/bensound-music/bensound-magnolia.mp3" },
+                { title: "Cherry Romance", url: "https://www.bensound.com/bensound-music/bensound-cherry.mp3" },
+                { title: "Apple Love", url: "https://www.bensound.com/bensound-music/bensound-apple.mp3" },
+                { title: "Pear Romance", url: "https://www.bensound.com/bensound-music/bensound-pear.mp3" },
+                { title: "Plum Love", url: "https://www.bensound.com/bensound-music/bensound-plum.mp3" },
+                { title: "Grape Romance", url: "https://www.bensound.com/bensound-music/bensound-grape.mp3" }
             ];
             
             let currentTrackIndex = 0;
