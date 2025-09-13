@@ -37,7 +37,8 @@
 
         .dots-container {
             position: relative;
-            width: 600px;
+            width: 90vw;
+            max-width: 600px;
             height: 200px;
             margin-bottom: 50px;
         }
@@ -765,6 +766,151 @@
             transform: none;
         }
 
+        /* Mobile responsive styles */
+        @media (max-width: 768px) {
+            .dots-container {
+                width: 95vw;
+                height: 150px;
+                margin-bottom: 30px;
+            }
+            
+            .dot {
+                width: 18px;
+                height: 18px;
+            }
+            
+            .person-photo {
+                width: 60px;
+                height: 60px;
+            }
+            
+            .person-photo.dot1-photo {
+                top: -90px;
+                left: -40px;
+            }
+            
+            .person-photo.dot2-photo {
+                top: -90px;
+                right: -40px;
+            }
+            
+            .welcome-text, .welcome-subtitle, .kissing-text, .kissing-subtitle {
+                font-size: 24px;
+                margin-bottom: 20px;
+            }
+            
+            .fighter-title {
+                font-size: 24px;
+                margin-bottom: 20px;
+            }
+            
+            .question-header {
+                font-size: 20px;
+                top: 40px;
+            }
+            
+            .question-display {
+                top: 100px;
+                font-size: 16px;
+                padding: 15px 20px;
+                max-width: 90%;
+            }
+            
+            .welcome-button, .start-game-btn {
+                padding: 12px 20px;
+                font-size: 16px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .dots-container {
+                width: 98vw;
+                height: 120px;
+                margin-bottom: 20px;
+            }
+            
+            .dot {
+                width: 16px;
+                height: 16px;
+            }
+            
+            .person-photo {
+                width: 50px;
+                height: 50px;
+            }
+            
+            .person-photo.dot1-photo {
+                top: -75px;
+                left: -35px;
+            }
+            
+            .person-photo.dot2-photo {
+                top: -75px;
+                right: -35px;
+            }
+            
+            .welcome-text, .welcome-subtitle, .kissing-text, .kissing-subtitle {
+                font-size: 20px;
+                margin-bottom: 15px;
+            }
+            
+            .fighter-title {
+                font-size: 20px;
+                margin-bottom: 15px;
+            }
+            
+            .question-header {
+                font-size: 18px;
+                top: 30px;
+            }
+            
+            .question-display {
+                top: 80px;
+                font-size: 14px;
+                padding: 12px 15px;
+                max-width: 95%;
+            }
+        }
+
+        /* Landscape mobile styles */
+        @media (max-height: 500px) and (orientation: landscape) {
+            .dots-container {
+                height: 100px;
+                margin-bottom: 20px;
+            }
+            
+            .person-photo {
+                width: 40px;
+                height: 40px;
+            }
+            
+            .person-photo.dot1-photo {
+                top: -60px;
+                left: -30px;
+            }
+            
+            .person-photo.dot2-photo {
+                top: -60px;
+                right: -30px;
+            }
+            
+            .welcome-text, .welcome-subtitle, .kissing-text, .kissing-subtitle {
+                font-size: 18px;
+                margin-bottom: 10px;
+            }
+            
+            .question-header {
+                font-size: 16px;
+                top: 20px;
+            }
+            
+            .question-display {
+                top: 60px;
+                font-size: 12px;
+                padding: 8px 12px;
+            }
+        }
+
         /* Game Screen */
         .game-screen {
             position: fixed;
@@ -1206,10 +1352,11 @@
             const dot1 = document.querySelector('.dot1');
             const dot2 = document.querySelector('.dot2');
             const root = document.querySelector('.root');
+            const container = document.querySelector('.dots-container');
             
             // Calculate positions based on current distance
-            // Container width is 600px, so we work with that
-            const containerWidth = 600;
+            // Use actual container width for responsive design
+            const containerWidth = container.offsetWidth;
             const dotSize = 20;
             const availableWidth = containerWidth - dotSize;
             
