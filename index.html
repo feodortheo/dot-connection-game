@@ -1096,19 +1096,47 @@
             position: fixed;
             top: 20px;
             right: 20px;
-            background: rgba(0, 0, 0, 0.8);
-            border: 2px solid #ff69b4;
-            border-radius: 15px;
-            padding: 10px;
+            background: rgba(0, 0, 0, 0.7);
+            border-radius: 25px;
+            padding: 8px;
             z-index: 2000;
             backdrop-filter: blur(10px);
-            box-shadow: 0 0 20px rgba(255, 105, 180, 0.3);
+            transition: all 0.3s ease;
+            overflow: hidden;
+            width: 50px;
+            height: 50px;
+        }
+
+        .music-player:hover {
+            width: auto;
+            height: auto;
+            padding: 10px;
+        }
+
+        .music-icon {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 24px;
+            color: #ff69b4;
+            transition: all 0.3s ease;
+        }
+
+        .music-player:hover .music-icon {
+            opacity: 0;
         }
 
         .music-controls {
             display: flex;
             align-items: center;
             gap: 8px;
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+
+        .music-player:hover .music-controls {
+            opacity: 1;
         }
 
         .music-btn {
@@ -1129,7 +1157,6 @@
         .music-btn:hover {
             background: #ff1493;
             transform: scale(1.1);
-            box-shadow: 0 0 10px rgba(255, 105, 180, 0.5);
         }
 
         .track-info {
@@ -1155,7 +1182,12 @@
             .music-player {
                 top: 10px;
                 right: 10px;
-                padding: 8px;
+                width: 40px;
+                height: 40px;
+            }
+            
+            .music-icon {
+                font-size: 20px;
             }
             
             .music-btn {
@@ -1220,13 +1252,14 @@
     
     <!-- Music Player -->
     <div id="musicPlayer" class="music-player">
+        <div class="music-icon">♪</div>
         <div class="music-controls">
             <button id="prevTrack" class="music-btn">⏮</button>
             <button id="playPause" class="music-btn">▶</button>
             <button id="nextTrack" class="music-btn">⏭</button>
             <div class="track-info">
                 <span id="trackTitle">Piano Moment</span>
-                <span id="trackNumber">1 / 10</span>
+                <span id="trackNumber">1 / 50</span>
             </div>
         </div>
     </div>
@@ -1316,7 +1349,7 @@
             const trackTitle = document.getElementById('trackTitle');
             const trackNumber = document.getElementById('trackNumber');
             
-            // Romantic and relaxing music tracks
+            // Romantic and relaxing music tracks (50 tracks)
             const musicTracks = [
                 { title: "Piano Moment", url: "https://www.bensound.com/bensound-music/bensound-pianomoment.mp3" },
                 { title: "Romantic Dreams", url: "https://www.bensound.com/bensound-music/bensound-romantic.mp3" },
@@ -1327,7 +1360,48 @@
                 { title: "Sweet Dreams", url: "https://www.bensound.com/bensound-music/bensound-sweet.mp3" },
                 { title: "Tender Moments", url: "https://www.bensound.com/bensound-music/bensound-tender.mp3" },
                 { title: "Soft Whisper", url: "https://www.bensound.com/bensound-music/bensound-soft.mp3" },
-                { title: "Heart Strings", url: "https://www.bensound.com/bensound-music/bensound-heart.mp3" }
+                { title: "Heart Strings", url: "https://www.bensound.com/bensound-music/bensound-heart.mp3" },
+                { title: "Moonlight Sonata", url: "https://www.bensound.com/bensound-music/bensound-moonlight.mp3" },
+                { title: "Ocean Waves", url: "https://www.bensound.com/bensound-music/bensound-ocean.mp3" },
+                { title: "Forest Whispers", url: "https://www.bensound.com/bensound-music/bensound-forest.mp3" },
+                { title: "Morning Dew", url: "https://www.bensound.com/bensound-music/bensound-morning.mp3" },
+                { title: "Evening Stars", url: "https://www.bensound.com/bensound-music/bensound-evening.mp3" },
+                { title: "Spring Rain", url: "https://www.bensound.com/bensound-music/bensound-spring.mp3" },
+                { title: "Summer Breeze", url: "https://www.bensound.com/bensound-music/bensound-summer.mp3" },
+                { title: "Autumn Leaves", url: "https://www.bensound.com/bensound-music/bensound-autumn.mp3" },
+                { title: "Winter Snow", url: "https://www.bensound.com/bensound-music/bensound-winter.mp3" },
+                { title: "Crystal Clear", url: "https://www.bensound.com/bensound-music/bensound-crystal.mp3" },
+                { title: "Golden Hour", url: "https://www.bensound.com/bensound-music/bensound-golden.mp3" },
+                { title: "Silver Lining", url: "https://www.bensound.com/bensound-music/bensound-silver.mp3" },
+                { title: "Purple Haze", url: "https://www.bensound.com/bensound-music/bensound-purple.mp3" },
+                { title: "Blue Skies", url: "https://www.bensound.com/bensound-music/bensound-blue.mp3" },
+                { title: "Green Fields", url: "https://www.bensound.com/bensound-music/bensound-green.mp3" },
+                { title: "Red Roses", url: "https://www.bensound.com/bensound-music/bensound-red.mp3" },
+                { title: "White Clouds", url: "https://www.bensound.com/bensound-music/bensound-white.mp3" },
+                { title: "Black Velvet", url: "https://www.bensound.com/bensound-music/bensound-black.mp3" },
+                { title: "Pink Blossoms", url: "https://www.bensound.com/bensound-music/bensound-pink.mp3" },
+                { title: "Orange Sunset", url: "https://www.bensound.com/bensound-music/bensound-orange.mp3" },
+                { title: "Yellow Sunshine", url: "https://www.bensound.com/bensound-music/bensound-yellow.mp3" },
+                { title: "Indigo Night", url: "https://www.bensound.com/bensound-music/bensound-indigo.mp3" },
+                { title: "Turquoise Dreams", url: "https://www.bensound.com/bensound-music/bensound-turquoise.mp3" },
+                { title: "Coral Reef", url: "https://www.bensound.com/bensound-music/bensound-coral.mp3" },
+                { title: "Lavender Fields", url: "https://www.bensound.com/bensound-music/bensound-lavender.mp3" },
+                { title: "Mint Fresh", url: "https://www.bensound.com/bensound-music/bensound-mint.mp3" },
+                { title: "Peach Blossom", url: "https://www.bensound.com/bensound-music/bensound-peach.mp3" },
+                { title: "Rose Garden", url: "https://www.bensound.com/bensound-music/bensound-rose.mp3" },
+                { title: "Lily Pond", url: "https://www.bensound.com/bensound-music/bensound-lily.mp3" },
+                { title: "Daisy Chain", url: "https://www.bensound.com/bensound-music/bensound-daisy.mp3" },
+                { title: "Tulip Fields", url: "https://www.bensound.com/bensound-music/bensound-tulip.mp3" },
+                { title: "Sunflower Valley", url: "https://www.bensound.com/bensound-music/bensound-sunflower.mp3" },
+                { title: "Orchid Garden", url: "https://www.bensound.com/bensound-music/bensound-orchid.mp3" },
+                { title: "Jasmine Tea", url: "https://www.bensound.com/bensound-music/bensound-jasmine.mp3" },
+                { title: "Lotus Pond", url: "https://www.bensound.com/bensound-music/bensound-lotus.mp3" },
+                { title: "Magnolia Tree", url: "https://www.bensound.com/bensound-music/bensound-magnolia.mp3" },
+                { title: "Cherry Blossom", url: "https://www.bensound.com/bensound-music/bensound-cherry.mp3" },
+                { title: "Apple Orchard", url: "https://www.bensound.com/bensound-music/bensound-apple.mp3" },
+                { title: "Pear Tree", url: "https://www.bensound.com/bensound-music/bensound-pear.mp3" },
+                { title: "Plum Garden", url: "https://www.bensound.com/bensound-music/bensound-plum.mp3" },
+                { title: "Grape Vine", url: "https://www.bensound.com/bensound-music/bensound-grape.mp3" }
             ];
             
             let currentTrackIndex = 0;
