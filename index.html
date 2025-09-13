@@ -1060,33 +1060,29 @@
             position: absolute;
             pointer-events: none;
             z-index: 1002;
-            animation: questionMarkFall 4s ease-out forwards;
+            animation: questionMarkFloat 2s ease-out forwards;
         }
 
-        @keyframes questionMarkFall {
+        @keyframes questionMarkFloat {
             0% {
                 opacity: 1;
                 transform: translateY(0px) scale(1) rotate(0deg);
             }
-            20% {
+            25% {
                 opacity: 1;
-                transform: translateY(60px) scale(1.1) rotate(10deg);
+                transform: translateY(-20px) scale(1.2) rotate(10deg);
             }
-            40% {
+            50% {
                 opacity: 1;
-                transform: translateY(120px) scale(1.2) rotate(-5deg);
+                transform: translateY(-40px) scale(1.1) rotate(-5deg);
             }
-            60% {
-                opacity: 1;
-                transform: translateY(180px) scale(1.1) rotate(15deg);
-            }
-            80% {
-                opacity: 0.8;
-                transform: translateY(240px) scale(0.9) rotate(25deg);
+            75% {
+                opacity: 0.7;
+                transform: translateY(-60px) scale(0.9) rotate(15deg);
             }
             100% {
                 opacity: 0;
-                transform: translateY(300px) scale(0.7) rotate(35deg);
+                transform: translateY(-80px) scale(0.7) rotate(25deg);
             }
         }
 
@@ -2010,15 +2006,17 @@
                 clearInterval(questionMarkInterval);
             }
             
-            // Create initial batch of question marks and doubt emojis scattered across the entire screen
-            for (let i = 0; i < 50; i++) {
-                createQuestionMarkElement();
+            // Create initial batch of question marks and doubt emojis (like hearts on welcome screen)
+            for (let i = 0; i < 8; i++) {
+                setTimeout(() => {
+                    createQuestionMarkElement();
+                }, i * 120);
             }
             
-            // Start continuous creation of falling elements
+            // Start continuous creation of falling elements (slower)
             questionMarkInterval = setInterval(() => {
                 createQuestionMarkElement();
-            }, 300); // Create new element every 300ms
+            }, 800); // Create new element every 800ms (slower)
         }
         
         function createQuestionMarkElement() {
@@ -2032,7 +2030,7 @@
             element.style.position = 'fixed';
             element.style.zIndex = '1003';
             
-            // Position randomly across the entire screen (including bottom)
+            // Position randomly around the screen (like hearts on welcome screen)
             const randomX = Math.random() * window.innerWidth;
             const randomY = Math.random() * window.innerHeight;
             
@@ -2041,12 +2039,12 @@
             
             document.body.appendChild(element);
             
-            // Remove after animation
+            // Remove after animation (same duration as hearts)
             setTimeout(() => {
                 if (element.parentNode) {
                     element.parentNode.removeChild(element);
                 }
-            }, 4000); // Longer duration for slower fall
+            }, 2000);
         }
 
         function showKissAnimation() {
