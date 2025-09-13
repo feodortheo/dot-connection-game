@@ -1,0 +1,2018 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dot Connection Game</title>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/face_detection@0.4/face_detection.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.10.0/dist/tf.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: #000;
+            color: #fff;
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+
+        .container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .dots-container {
+            position: relative;
+            width: 600px;
+            height: 200px;
+            margin-bottom: 50px;
+        }
+
+        .dot {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background-color: #ff69b4;
+            border-radius: 50%;
+            top: 50%;
+            transform: translateY(-50%);
+            transition: all 0.5s ease;
+        }
+
+        .dot1 {
+            left: 50px;
+        }
+
+        .dot2 {
+            right: 50px;
+        }
+
+        .root {
+            position: absolute;
+            height: 3px;
+            background-color: #ff69b4;
+            top: 50%;
+            transform: translateY(-50%);
+            transition: all 0.5s ease;
+        }
+
+        .root.initial {
+            left: 70px;
+            right: 70px;
+        }
+
+        .root.correct {
+            left: 50%;
+            right: 50%;
+            transform: translateY(-50%) translateX(-50%);
+            width: 0;
+        }
+
+        .root.incorrect {
+            left: 25%;
+            right: 25%;
+        }
+
+        .buttons {
+            display: flex;
+            gap: 30px;
+        }
+
+        .btn {
+            padding: 15px 30px;
+            font-size: 18px;
+            border: 2px solid #ff69b4;
+            background-color: transparent;
+            color: #ff69b4;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .btn:hover {
+            background-color: #ff69b4;
+            color: #000;
+        }
+
+        .btn:active {
+            transform: scale(0.95);
+        }
+
+        .victory-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: transparent;
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .victory-text {
+            color: #ff69b4;
+            font-weight: bold;
+            text-shadow: 0 0 20px #ff69b4;
+            position: absolute;
+            pointer-events: none;
+            z-index: 1001;
+            will-change: transform, opacity;
+            backface-visibility: hidden;
+            transform: translateZ(0);
+        }
+
+        .victory-text.love {
+            /* Animation will be set inline for immediate start */
+        }
+
+        @keyframes flyAround {
+            0% {
+                transform: translate(0, 0) rotate(0deg);
+            }
+            25% {
+                transform: translate(100vw, -50vh) rotate(90deg);
+            }
+            50% {
+                transform: translate(50vw, 100vh) rotate(180deg);
+            }
+            75% {
+                transform: translate(-50vw, 50vh) rotate(270deg);
+            }
+            100% {
+                transform: translate(0, 0) rotate(360deg);
+            }
+        }
+
+        @keyframes flyDiagonal {
+            0% {
+                transform: translate(0, 0) rotate(0deg);
+            }
+            50% {
+                transform: translate(100vw, 100vh) rotate(180deg);
+            }
+            100% {
+                transform: translate(0, 0) rotate(360deg);
+            }
+        }
+
+        @keyframes flyHorizontal {
+            0% {
+                transform: translate(-100px, 0) rotate(0deg);
+            }
+            50% {
+                transform: translate(calc(100vw + 100px), 0) rotate(180deg);
+            }
+            100% {
+                transform: translate(-100px, 0) rotate(360deg);
+            }
+        }
+
+        @keyframes flyVertical {
+            0% {
+                transform: translate(0, -100px) rotate(0deg);
+            }
+            50% {
+                transform: translate(0, calc(100vh + 100px)) rotate(180deg);
+            }
+            100% {
+                transform: translate(0, -100px) rotate(360deg);
+            }
+        }
+
+        @keyframes fallDown {
+            0% {
+                transform: translateY(-200px) rotate(0deg);
+                opacity: 1;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(calc(100vh + 200px)) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        @keyframes fontPulse {
+            0% {
+                font-size: inherit;
+                text-shadow: 0 0 20px #ff69b4;
+            }
+            50% {
+                font-size: 1.3em;
+                text-shadow: 0 0 30px #ff69b4, 0 0 40px #ff69b4;
+            }
+            100% {
+                font-size: inherit;
+                text-shadow: 0 0 20px #ff69b4;
+            }
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        .heart {
+            position: absolute;
+            color: #ff69b4;
+            font-size: 24px;
+            animation: fall 4s linear infinite;
+            pointer-events: none;
+            text-shadow: 0 0 10px #ff69b4;
+            filter: drop-shadow(0 0 5px rgba(255, 105, 180, 0.8));
+            z-index: 999;
+            will-change: transform, opacity;
+            backface-visibility: hidden;
+            transform: translateZ(0);
+        }
+
+        @keyframes fall {
+            0% {
+                transform: translateY(-100px) rotate(0deg);
+                opacity: 1;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(100vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        .restart-btn {
+            padding: 15px 30px;
+            font-size: 18px;
+            border: 2px solid #ff69b4;
+            background-color: #ff69b4;
+            color: #fff;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+            margin-top: 20px;
+            text-shadow: 0 0 10px #fff;
+            box-shadow: 0 0 20px rgba(255, 105, 180, 0.5), 0 0 40px rgba(255, 105, 180, 0.3), 0 0 60px rgba(255, 105, 180, 0.1);
+            animation: buttonGlow 2s ease-in-out infinite alternate;
+            z-index: 10000;
+            position: relative;
+        }
+
+        .restart-btn:hover {
+            background-color: #ff1493;
+            color: #fff;
+            text-shadow: 0 0 15px #fff;
+            box-shadow: 0 0 30px rgba(255, 20, 147, 0.8), 0 0 60px rgba(255, 20, 147, 0.5), 0 0 90px rgba(255, 20, 147, 0.3);
+            transform: scale(1.05);
+        }
+
+        .photo-upload-section {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background-color: rgba(0, 0, 0, 0.8);
+            padding: 20px;
+            border-radius: 10px;
+            border: 2px solid #ff69b4;
+            z-index: 100;
+        }
+
+        .photo-upload-section h3 {
+            color: #ff69b4;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .photo-input-group {
+            margin-bottom: 15px;
+        }
+
+        .photo-input-group label {
+            color: #ff69b4;
+            display: block;
+            margin-bottom: 5px;
+            font-size: 14px;
+        }
+
+        .photo-input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ff69b4;
+            border-radius: 5px;
+            background-color: transparent;
+            color: #ff69b4;
+            font-size: 12px;
+        }
+
+        .upload-btn {
+            width: 100%;
+            padding: 10px;
+            background-color: #ff69b4;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .upload-btn:hover {
+            background-color: #ff1493;
+            transform: scale(1.05);
+        }
+
+        .upload-btn:disabled {
+            background-color: #666;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .person-photo {
+            position: absolute;
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+            object-position: center center;
+            border: 3px solid #ff69b4;
+            border-radius: 50%;
+            transition: all 0.5s ease;
+            z-index: 10;
+        }
+
+        @keyframes headGlow {
+            0% {
+                filter: drop-shadow(0 0 5px #ff69b4);
+            }
+            100% {
+                filter: drop-shadow(0 0 15px #ff69b4) drop-shadow(0 0 25px rgba(255, 105, 180, 0.5));
+            }
+        }
+
+        .person-photo.dot1-photo {
+            top: -110px;
+            left: -50px;
+        }
+
+        .person-photo.dot2-photo {
+            top: -110px;
+            right: -50px;
+        }
+
+        .processing-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: rgba(0, 0, 0, 0.9);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+        }
+
+        .processing-container {
+            background-color: #000;
+            border: 2px solid #ff69b4;
+            border-radius: 10px;
+            padding: 40px;
+            text-align: center;
+            max-width: 400px;
+        }
+
+        .processing-text {
+            color: #ff69b4;
+            font-size: 18px;
+            margin-bottom: 20px;
+        }
+
+        .processing-spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #ff69b4;
+            border-top: 4px solid transparent;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Welcome Screen */
+        .welcome-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: #000;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .welcome-text {
+            font-size: 32px;
+            color: #ff69b4;
+            font-weight: bold;
+            text-shadow: 0 0 20px #ff69b4;
+            margin-bottom: 30px;
+            text-align: center;
+            animation: welcomePulse 2s ease-in-out infinite;
+            line-height: 1.4;
+        }
+
+        .welcome-subtitle {
+            font-size: 32px;
+            color: #ff69b4;
+            font-weight: bold;
+            text-shadow: 0 0 20px #ff69b4;
+            margin-bottom: 30px;
+            text-align: center;
+            line-height: 1.4;
+        }
+
+        .welcome-button {
+            background-color: #ff69b4;
+            color: #fff;
+            border: none;
+            border-radius: 15px;
+            padding: 15px 40px;
+            font-size: 20px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 20px rgba(255, 105, 180, 0.3);
+        }
+
+        .welcome-button:hover {
+            background-color: #ff1493;
+            transform: scale(1.05);
+            box-shadow: 0 0 30px rgba(255, 105, 180, 0.5);
+        }
+
+        @keyframes welcomePulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .butterfly {
+            width: 120px;
+            height: 80px;
+            cursor: pointer;
+            animation: butterflyFlyAround 8s ease-in-out infinite;
+            transition: all 0.3s ease;
+            position: absolute;
+            z-index: 1001;
+        }
+
+        .butterfly:hover {
+            transform: scale(1.1);
+        }
+
+        /* Butterfly body */
+        .butterfly::before {
+            content: '';
+            position: absolute;
+            width: 6px;
+            height: 60px;
+            background: linear-gradient(to bottom, #8B4513, #A0522D, #8B4513);
+            border-radius: 3px;
+            left: 50%;
+            top: 10px;
+            transform: translateX(-50%);
+            box-shadow: 
+                0 0 10px rgba(139, 69, 19, 0.5),
+                inset 0 0 5px rgba(255, 255, 255, 0.2);
+        }
+
+        /* Left wing */
+        .butterfly::after {
+            content: '';
+            position: absolute;
+            width: 50px;
+            height: 35px;
+            background: 
+                radial-gradient(circle at 30% 30%, #ff69b4, #ff1493),
+                radial-gradient(circle at 70% 20%, #ffc0cb, #ff69b4),
+                radial-gradient(circle at 20% 70%, #ff1493, #ff69b4),
+                linear-gradient(45deg, #ff69b4, #ff1493, #ff69b4);
+            border-radius: 50% 20% 50% 20%;
+            left: 0;
+            top: 15px;
+            transform: rotate(-15deg);
+            box-shadow: 
+                0 0 15px rgba(255, 105, 180, 0.6),
+                inset 0 0 10px rgba(255, 255, 255, 0.3),
+                0 0 5px rgba(255, 20, 147, 0.4);
+        }
+
+        /* Right wing - using a separate element */
+        .butterfly .right-wing {
+            position: absolute;
+            width: 50px;
+            height: 35px;
+            background: 
+                radial-gradient(circle at 30% 30%, #ff69b4, #ff1493),
+                radial-gradient(circle at 70% 20%, #ffc0cb, #ff69b4),
+                radial-gradient(circle at 20% 70%, #ff1493, #ff69b4),
+                linear-gradient(-45deg, #ff69b4, #ff1493, #ff69b4);
+            border-radius: 20% 50% 20% 50%;
+            right: 0;
+            top: 15px;
+            transform: rotate(15deg);
+            box-shadow: 
+                0 0 15px rgba(255, 105, 180, 0.6),
+                inset 0 0 10px rgba(255, 255, 255, 0.3),
+                0 0 5px rgba(255, 20, 147, 0.4);
+        }
+
+        /* Wing patterns */
+        .butterfly .wing-pattern {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background: radial-gradient(circle, #fff, #ffc0cb);
+            border-radius: 50%;
+            top: 20px;
+            left: 15px;
+            box-shadow: 0 0 5px rgba(255, 255, 255, 0.8);
+        }
+
+        .butterfly .wing-pattern:nth-child(2) {
+            top: 35px;
+            left: 25px;
+            width: 6px;
+            height: 6px;
+        }
+
+        .butterfly .wing-pattern:nth-child(3) {
+            top: 25px;
+            right: 15px;
+            left: auto;
+        }
+
+        .butterfly .wing-pattern:nth-child(4) {
+            top: 40px;
+            right: 25px;
+            left: auto;
+            width: 6px;
+            height: 6px;
+        }
+
+        @keyframes butterflyFlyAround {
+            0% {
+                transform: translate(0vw, 0vh) rotate(0deg);
+            }
+            12.5% {
+                transform: translate(20vw, -10vh) rotate(45deg);
+            }
+            25% {
+                transform: translate(40vw, 5vh) rotate(90deg);
+            }
+            37.5% {
+                transform: translate(60vw, -15vh) rotate(135deg);
+            }
+            50% {
+                transform: translate(80vw, 10vh) rotate(180deg);
+            }
+            62.5% {
+                transform: translate(60vw, 30vh) rotate(225deg);
+            }
+            75% {
+                transform: translate(40vw, 50vh) rotate(270deg);
+            }
+            87.5% {
+                transform: translate(20vw, 30vh) rotate(315deg);
+            }
+            100% {
+                transform: translate(0vw, 0vh) rotate(360deg);
+            }
+        }
+
+        /* Kissing Screen */
+        .kissing-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: #000;
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .kissing-text {
+            font-size: 32px;
+            color: #ff69b4;
+            font-weight: bold;
+            text-shadow: 0 0 20px #ff69b4;
+            margin-bottom: 30px;
+            text-align: center;
+            line-height: 1.4;
+        }
+
+        .kissing-subtitle {
+            font-size: 32px;
+            color: #ff69b4;
+            font-weight: bold;
+            text-shadow: 0 0 20px #ff69b4;
+            margin-bottom: 30px;
+            text-align: center;
+            line-height: 1.4;
+        }
+
+        /* Fighter Selection Screen */
+        .fighter-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: #000;
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .fighter-title {
+            font-size: 42px;
+            color: #ff69b4;
+            font-weight: bold;
+            text-shadow: 0 0 20px #ff69b4;
+            margin-bottom: 40px;
+            text-align: center;
+        }
+
+        .fighter-upload-section {
+            background-color: rgba(0, 0, 0, 0.8);
+            padding: 30px;
+            border-radius: 15px;
+            border: 2px solid #ff69b4;
+            max-width: 500px;
+            width: 90%;
+        }
+
+        .fighter-upload-section h3 {
+            color: #ff69b4;
+            margin-bottom: 20px;
+            text-align: center;
+            font-size: 24px;
+        }
+
+        .fighter-input-group {
+            margin-bottom: 20px;
+        }
+
+        .fighter-input-group label {
+            color: #ff69b4;
+            display: block;
+            margin-bottom: 8px;
+            font-size: 16px;
+        }
+
+        .fighter-input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ff69b4;
+            border-radius: 8px;
+            background-color: transparent;
+            color: #ff69b4;
+            font-size: 14px;
+        }
+
+        .fighter-name-input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ff69b4;
+            border-radius: 8px;
+            background-color: transparent;
+            color: #ff69b4;
+            font-size: 14px;
+            margin-top: 8px;
+        }
+
+        .fighter-upload-row {
+            display: flex;
+            gap: 15px;
+            align-items: flex-end;
+            margin-bottom: 20px;
+        }
+
+        .fighter-upload-row .fighter-input-group {
+            flex: 1;
+            margin-bottom: 0;
+        }
+
+        .start-game-btn {
+            width: 100%;
+            padding: 15px;
+            background-color: #ff69b4;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 18px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            margin-top: 20px;
+        }
+
+        .start-game-btn:hover {
+            background-color: #ff1493;
+            transform: scale(1.05);
+        }
+
+        .start-game-btn:disabled {
+            background-color: #666;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Game Screen */
+        .game-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: #000;
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .question-header {
+            position: absolute;
+            top: 50px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #ff69b4;
+            font-size: 24px;
+            font-weight: bold;
+            text-align: center;
+            text-shadow: 0 0 15px #ff69b4;
+            z-index: 1001;
+            opacity: 1;
+        }
+
+        .question-header.fade-out {
+            animation: fadeOut 1s ease-out forwards;
+            animation-fill-mode: forwards;
+        }
+
+        @keyframes fadeOut {
+            0% {
+                opacity: 1;
+            }
+            100% {
+                opacity: 0;
+            }
+        }
+
+        .question-display {
+            position: absolute;
+            top: 120px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: rgba(0, 0, 0, 0.8);
+            color: #ff69b4;
+            padding: 20px 30px;
+            border-radius: 15px;
+            border: 2px solid #ff69b4;
+            font-size: 18px;
+            font-weight: bold;
+            text-align: center;
+            max-width: 80%;
+            box-shadow: 0 0 20px rgba(255, 105, 180, 0.3);
+            z-index: 1001;
+        }
+
+        /* Answer feedback animations */
+        .answer-heart {
+            position: absolute;
+            font-size: 40px;
+            color: #ff69b4;
+            pointer-events: none;
+            z-index: 1002;
+            animation: heartFloat 2s ease-out forwards;
+        }
+
+        .answer-broken-heart {
+            position: absolute;
+            font-size: 40px;
+            color: #ff69b4;
+            pointer-events: none;
+            z-index: 1002;
+            animation: brokenHeartFall 2s ease-out forwards;
+        }
+
+        @keyframes heartFloat {
+            0% {
+                opacity: 1;
+                transform: translateY(0px) scale(1);
+            }
+            50% {
+                opacity: 1;
+                transform: translateY(-30px) scale(1.2);
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(-60px) scale(0.8);
+            }
+        }
+
+        @keyframes brokenHeartFall {
+            0% {
+                opacity: 1;
+                transform: translateY(0px) rotate(0deg) scale(1);
+            }
+            50% {
+                opacity: 1;
+                transform: translateY(20px) rotate(10deg) scale(1.1);
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(60px) rotate(20deg) scale(0.6);
+            }
+        }
+
+        /* Kiss animations */
+        .kiss-animation {
+            position: absolute;
+            font-size: 30px;
+            color: #ff69b4;
+            pointer-events: none;
+            z-index: 1002;
+            animation: kissFloat 3s ease-out forwards;
+        }
+
+        @keyframes kissFloat {
+            0% {
+                opacity: 1;
+                transform: translateY(0px) scale(1) rotate(0deg);
+            }
+            25% {
+                opacity: 1;
+                transform: translateY(-20px) scale(1.2) rotate(10deg);
+            }
+            50% {
+                opacity: 1;
+                transform: translateY(-40px) scale(1.1) rotate(-5deg);
+            }
+            75% {
+                opacity: 0.7;
+                transform: translateY(-60px) scale(0.9) rotate(15deg);
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(-80px) scale(0.7) rotate(25deg);
+            }
+        }
+
+        .question-mark-animation {
+            font-size: 30px;
+            color: #ff69b4;
+            position: absolute;
+            pointer-events: none;
+            z-index: 1002;
+            animation: questionMarkFall 4s ease-out forwards;
+        }
+
+        @keyframes questionMarkFall {
+            0% {
+                opacity: 1;
+                transform: translateY(0px) scale(1) rotate(0deg);
+            }
+            20% {
+                opacity: 1;
+                transform: translateY(60px) scale(1.1) rotate(10deg);
+            }
+            40% {
+                opacity: 1;
+                transform: translateY(120px) scale(1.2) rotate(-5deg);
+            }
+            60% {
+                opacity: 1;
+                transform: translateY(180px) scale(1.1) rotate(15deg);
+            }
+            80% {
+                opacity: 0.8;
+                transform: translateY(240px) scale(0.9) rotate(25deg);
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(300px) scale(0.7) rotate(35deg);
+            }
+        }
+
+        /* End Screen */
+        .end-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: #000;
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .end-text {
+            font-size: 36px;
+            color: #ff69b4;
+            font-weight: bold;
+            text-shadow: 0 0 20px #ff69b4;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        @keyframes buttonGlow {
+            0% {
+                box-shadow: 0 0 20px rgba(255, 105, 180, 0.5), 0 0 40px rgba(255, 105, 180, 0.3), 0 0 60px rgba(255, 105, 180, 0.1);
+                text-shadow: 0 0 10px #fff;
+            }
+            100% {
+                box-shadow: 0 0 30px rgba(255, 105, 180, 0.7), 0 0 60px rgba(255, 105, 180, 0.4), 0 0 90px rgba(255, 105, 180, 0.2);
+                text-shadow: 0 0 15px #fff, 0 0 25px #fff;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Welcome Screen -->
+    <div class="welcome-screen" id="welcomeScreen">
+        <div class="welcome-text">привет, дорогуши</div>
+        <div class="welcome-subtitle">я сделал игру, чтобы проверить, насколько хорошо вы знаете друг друга</div>
+        <div class="welcome-subtitle">готовы?</div>
+        <button class="welcome-button" onclick="showKissingScreenWithHearts()">да</button>
+    </div>
+
+    <!-- Kissing Screen -->
+    <div class="kissing-screen" id="kissingScreen">
+        <div class="kissing-text" id="kissingText">для начала нужно поцеловаться</div>
+        <button class="welcome-button" id="kissButton" onclick="showQuestionAndButton()">мы поцеловались</button>
+    </div>
+
+    <!-- Fighter Selection Screen -->
+    <div class="fighter-screen" id="fighterScreen">
+        <div class="fighter-title">выберите ваших бойцов</div>
+        <div class="fighter-upload-section">
+            <div class="fighter-upload-row">
+                <div class="fighter-input-group">
+                    <label for="fighter1">Боец 1:</label>
+                    <input type="file" id="fighter1" class="fighter-input" accept="image/*" onchange="handleFighterUpload(1, this)">
+                    <input type="text" id="name1" class="fighter-name-input" placeholder="Введите имя" onchange="updateFighterName(1, this)">
+                </div>
+                <div class="fighter-input-group">
+                    <label for="fighter2">Боец 2:</label>
+                    <input type="file" id="fighter2" class="fighter-input" accept="image/*" onchange="handleFighterUpload(2, this)">
+                    <input type="text" id="name2" class="fighter-name-input" placeholder="Введите имя" onchange="updateFighterName(2, this)">
+                </div>
+            </div>
+            <button class="start-game-btn" onclick="beginGame()" id="startGameBtn" disabled>Начать путь космической любви!</button>
+        </div>
+    </div>
+
+    <!-- Game Screen -->
+    <div class="game-screen" id="gameScreen">
+        <div class="question-header" id="questionHeader"></div>
+        <div class="question-display" id="questionDisplay"></div>
+        <div class="container">
+            <div class="dots-container">
+                <div class="dot dot1">
+                    <img id="person1" class="person-photo dot1-photo" style="display: none;" alt="Person 1">
+                </div>
+                <div class="dot dot2">
+                    <img id="person2" class="person-photo dot2-photo" style="display: none;" alt="Person 2">
+                </div>
+                <div class="root initial"></div>
+            </div>
+            
+            <div class="buttons">
+                <button class="btn" onclick="moveDots('correct')">Правильно</button>
+                <button class="btn" onclick="moveDots('incorrect')">Неправильно</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- End Screen -->
+    <div class="end-screen" id="endScreen">
+        <div class="end-text">Игра завершена!</div>
+        <button class="restart-btn" onclick="restartFromBeginning()">Играть снова</button>
+    </div>
+
+    <!-- Victory Screen -->
+    <div class="victory-screen" id="victoryScreen">
+        <button class="restart-btn" onclick="restartGame()">Играть снова</button>
+    </div>
+
+    <!-- Processing Modal -->
+    <div class="processing-modal" id="processingModal">
+        <div class="processing-container">
+            <div class="processing-spinner"></div>
+            <div class="processing-text" id="processingText">Обнаружение лиц...</div>
+        </div>
+    </div>
+
+    <script>
+        let currentDistance = 20; // Total path length starts at 20
+        const maxDistance = 20;
+        const minDistance = 0;
+        let uploadedPhotos = { photo1: null, photo2: null };
+        let fighterNames = { name1: '', name2: '' };
+        let faceDetector = null;
+        let currentScreen = 'welcome';
+        let currentQuestion = '';
+        let currentQuestionIndex = 0; // To alternate between names
+        let headerFadeTimeout = null;
+        let questionMarkInterval = null;
+        
+        // Array of absurd Russian questions
+        const questions = [
+            "Если бы партнёр был овощем, то каким именно и как бы он умер?",
+            "Что бы выбрал партнёр: всю жизнь чихать блёстками или рыгать радугой?",
+            "Если бы партнёр мог превратиться в любой предмет мебели, то в какой?",
+            "Какое животное партнёр бы завёл, если бы оно было размером с муху?",
+            "Что бы выбрал партнёр: иметь нос на лбу или уши на коленях?",
+            "Если бы партнёр был запахом, то каким?",
+            "Что бы сделал партнёр, если бы проснулся в теле лампы?",
+            "Какой мультяшный злодей лучше всего отражает характер партнёра?",
+            "Если бы партнёр мог заменить свои руки чем угодно, что бы это было?",
+            "Что бы выбрал партнёр: жить с голосом уточки или с глазами хамелеона?",
+            "Если бы партнёр мог общаться только через одну песню, то какую бы выбрал?",
+            "В каком предмете школьной программы партнёр мог бы сдать экзамен за инопланетян?",
+            "Если бы партнёр был пиццей, какие были бы самые странные ингредиенты в нём?",
+            "Что бы выбрал партнёр: волосы из спагетти или ногти из стекла?",
+            "Если бы партнёр жил в холодильнике, что было бы его соседом?",
+            "Какую суперспособность партнёр бы выбрал: вызывать голубей или исчезать только на 2 секунды?",
+            "Если бы партнёр был героем компьютерной игры, какое у него было бы самое бесполезное умение?",
+            "Что бы выбрал партнёр: всегда пахнуть как бензин или как варёная капуста?",
+            "Если бы партнёр был приложением на телефоне, то каким?",
+            "Что партнёр делал бы, если бы каждое его слово превращалось в миуканье кошки?",
+            "Если бы партнёр мог заменить своё отражение в зеркале на любое существо, что бы это было?",
+            "Что бы выбрал партнёр: спать в аквариуме или на облаке из тараканов?",
+            "Какое животное было бы телохранителем партнёра, если бы оно носило костюм?",
+            "Если бы партнёр мог застрять навсегда в одном возрасте, но не своём, то каком?",
+            "Каким был бы партнёр, если бы стал видом мороженого?",
+            "Что бы выбрал партнёр: иметь язык длиной 2 метра или волосы, растущие внутрь?",
+            "Если бы партнёр мог ходить только задом наперёд или боком, что бы он выбрал?",
+            "Какой предмет в доме партнёр бы оживил и сделал своим другом?",
+            "Если бы партнёр был проклят и должен был каждое утро просыпаться в новом виде, кем бы он хотел быть первым?",
+            "Что бы выбрал партнёр: никогда не моргать или всегда кричать шёпотом?",
+            "Если бы партнёр был цветом, то каким, но запрещённым в природе?",
+            "Что бы сделал партнёр, если бы его тень стала разговаривать?",
+            "Если бы партнёр мог общаться только с растениями, то с каким он бы подружился?",
+            "Что бы выбрал партнёр: носить хвост павлина или рога оленя всю жизнь?",
+            "Если бы партнёр был обувью, то какой именно?",
+            "В каком фильме ужасов партнёр был бы чудовищем и как его бы звали?",
+            "Что бы выбрал партнёр: руки-крылья или ноги-колёса?",
+            "Если бы партнёр мог каждую ночь менять свой сон на чей-то чужой, кого бы выбрал?",
+            "Какая абсурдная вещь могла бы стать тотемом партнёра?",
+            "Если бы партнёр был звуком, то каким?",
+            "Что бы выбрал партнёр: разговаривать только стихами или только мычать?",
+            "Если бы партнёр жил внутри продукта в супермаркете, то какого?",
+            "Что бы выбрал партнёр: жить на крыше или под кроватью?",
+            "Если бы партнёр мог менять форму головы, какую выбрал бы первым делом?",
+            "Что бы выбрал партнёр: все мысли звучат в слух или все сны транслируются по ТВ?",
+            "Если бы партнёр стал духом предмета, то чего именно?",
+            "Какую нелепую фобию партнёр мог бы придумать сам?",
+            "Если бы партнёр умел летать, но только вниз, как бы он использовал это?",
+            "Что бы выбрал партнёр: жить без коленей или без локтей?",
+            "Если бы партнёр был словом в словаре, то каким?",
+            "Что бы выбрал партнёр: ходить вечно мокрым или вечно липким?",
+            "Если бы партнёр мог издавать только один звук всю жизнь, какой бы выбрал?",
+            "Что бы выбрал партнёр: всегда есть еду холодной или всегда надувать её перед тем, как съесть?",
+            "Если бы партнёр был символом эмодзи, то каким нелепым?",
+            "Что бы выбрал партнёр: жить в аквариуме или в микроволновке (без работы)?",
+            "Если бы партнёр умел общаться с животными, но только с тараканами, что бы он у них спрашивал?",
+            "Какой супергерой с максимально бесполезной силой подошёл бы партнёру?",
+            "Если бы партнёр был облаком, какой формы?",
+            "Что бы выбрал партнёр: иметь три носа или ни одного?",
+            "Если бы партнёр мог оживить один предмет, какой был бы первым?",
+            "Что бы выбрал партнёр: всегда чихать котятами или кашлять бабочками?",
+            "Если бы партнёр был программным багом, то каким?",
+            "Что бы выбрал партнёр: ходить на руках или есть только глазами?",
+            "Если бы партнёр стал монстром, какой была бы его слабость?",
+            "Какая реклама идеально отражает партнёра?",
+            "Если бы партнёр мог видеть только один цвет, какой выбрал бы?",
+            "Что бы выбрал партнёр: иметь хвост крысы или хобот слона?",
+            "Если бы партнёр был планетой, то какой был бы климат?",
+            "Что бы выбрал партнёр: всё время рифмовать слова или говорить наоборот?",
+            "Если бы партнёр был облаком пыли, что бы он делал?",
+            "Что бы выбрал партнёр: жить вечно, но только как стул, или умереть человеком завтра?",
+            "Если бы партнёр стал овощем, его бы съели или посадили?",
+            "Что бы выбрал партнёр: пальцы-бананы или зубы-конфеты?",
+            "Если бы партнёр был компьютерной вирусной рекламой, какой?",
+            "Что бы выбрал партнёр: ходить вечно с сапогами-лыжами или босиком по льду?",
+            "Если бы партнёр был мифическим существом, то каким нелепым?",
+            "Что бы выбрал партнёр: жить в мире, где всё из резины, или в мире, где всё из стекла?",
+            "Если бы партнёр стал статуей, какую позу он бы принял?",
+            "Что бы выбрал партнёр: быть вечно лысым или иметь волосы из мха?",
+            "Если бы партнёр был вкусом жвачки, какой бы это был вкус?",
+            "Что бы выбрал партнёр: ноги как пружины или уши как пропеллеры?",
+            "Если бы партнёр был запахом, каким бы он был в общественном транспорте?",
+            "Что бы выбрал партнёр: тело из мармелада или зубы из стекла?",
+            "Если бы партнёр был багом в матрице, каким именно?",
+            "Что бы выбрал партнёр: каждую минуту терять один волос или каждую минуту забывать одно слово?",
+            "Если бы партнёр был волшебным артефактом, каким?",
+            "Что бы выбрал партнёр: есть только суп ложкой с дыркой или пить воду ситом?",
+            "Если бы партнёр был элементом интерьера, каким?",
+            "Что бы выбрал партнёр: ходить только боком или прыгать вместо шагов?",
+            "Если бы партнёр мог выбрать себе нелепое прозвище, какое бы выбрал?",
+            "Что бы выбрал партнёр: вместо крови иметь кетчуп или майонез?",
+            "Если бы партнёр стал персонажем детской сказки, каким странным?",
+            "Что бы выбрал партнёр: глаза на пятках или рот на локте?",
+            "Если бы партнёр был погодным явлением, то каким?",
+            "Что бы выбрал партнёр: всегда быть липким или всегда быть скользким?",
+            "Если бы партнёр был ошибкой на клавиатуре, какой?",
+            "Что бы выбрал партнёр: говорить только голосом робота или всегда шептать ультразвуком?",
+            "Если бы партнёр был магическим животным, то каким бы странным гибридом?",
+            "Что бы выбрал партнёр: каждый день превращаться в хлеб или в чайник?",
+            "Если бы партнёр мог остаться навсегда мультяшным персонажем, кем именно?"
+        ];
+        
+        function moveDots(action) {
+            const dot1 = document.querySelector('.dot1');
+            const dot2 = document.querySelector('.dot2');
+            const root = document.querySelector('.root');
+            
+            if (action === 'correct') {
+                // Move dots 1 unit closer
+                currentDistance = Math.max(minDistance, currentDistance - 1);
+                // Show heart animation
+                showAnswerAnimation('heart');
+            } else if (action === 'incorrect') {
+                // Move dots 0.5 units apart
+                currentDistance = Math.min(maxDistance, currentDistance + 0.5);
+                // Show broken heart animation
+                showAnswerAnimation('broken-heart');
+            }
+            
+            updateDotPositions();
+            updateScoreDisplay();
+            
+            // Change question after each answer
+            showRandomQuestion();
+            
+            // Check for victory condition
+            if (currentDistance <= 0) {
+                showVictoryScreen();
+            }
+        }
+        
+        function updateDotPositions() {
+            const dot1 = document.querySelector('.dot1');
+            const dot2 = document.querySelector('.dot2');
+            const root = document.querySelector('.root');
+            
+            // Calculate positions based on current distance
+            // Container width is 600px, so we work with that
+            const containerWidth = 600;
+            const dotSize = 20;
+            const availableWidth = containerWidth - dotSize;
+            
+            // Convert distance to percentage
+            const distancePercentage = (currentDistance / maxDistance) * 100;
+            const leftPosition = (100 - distancePercentage) / 2;
+            const rightPosition = leftPosition;
+            
+            // Update dot positions
+            dot1.style.left = `${leftPosition}%`;
+            dot2.style.right = `${rightPosition}%`;
+            
+            // Update root line
+            root.style.left = `${leftPosition + 1}%`;
+            root.style.right = `${rightPosition + 1}%`;
+            
+            // Remove any existing classes
+            root.classList.remove('initial', 'correct', 'incorrect');
+            
+            if (currentDistance <= 0) {
+                root.classList.add('correct');
+            } else {
+                root.classList.add('initial');
+            }
+        }
+        
+        function updateScoreDisplay() {
+            let scoreElement = document.querySelector('.score-display');
+            if (!scoreElement) {
+                scoreElement = document.createElement('div');
+                scoreElement.className = 'score-display';
+                scoreElement.style.cssText = `
+                    position: absolute;
+                    top: 20px;
+                    left: 20px;
+                    color: #ff69b4;
+                    font-size: 18px;
+                    font-weight: bold;
+                `;
+                document.querySelector('.container').appendChild(scoreElement);
+            }
+            
+            const progress = ((maxDistance - currentDistance) / maxDistance * 100).toFixed(1);
+            scoreElement.textContent = `Progress: ${progress}%`;
+        }
+
+        function showVictoryScreen() {
+            // Hide game screen and show victory screen
+            showScreen('victory');
+            createVictoryTexts();
+            startHeartAnimation();
+        }
+        
+        function createVictoryTexts() {
+            const victoryScreen = document.getElementById('victoryScreen');
+            
+            // Create 40 "love" texts and make them fall immediately
+            for (let i = 0; i < 40; i++) {
+                const loveText = document.createElement('div');
+                loveText.className = 'victory-text love';
+                loveText.textContent = 'love';
+                
+                // Random position all over the screen
+                loveText.style.left = Math.random() * 100 + '%';
+                loveText.style.top = Math.random() * 100 + '%';
+                loveText.style.fontSize = (Math.random() * 200 + 300) + 'px';
+                
+                // Start falling immediately with pulsation - smoother timing
+                const duration = Math.random() * 3 + 8; // 8-11 seconds for smoother movement
+                loveText.style.animation = `fallDown ${duration}s cubic-bezier(0.25, 0.46, 0.45, 0.94) infinite, fontPulse ${Math.random() * 2 + 2}s ease-in-out infinite`;
+                loveText.style.animationDelay = '0s';
+                
+                victoryScreen.appendChild(loveText);
+                
+                // Remove text after it falls off screen
+                setTimeout(() => {
+                    if (loveText.parentNode) {
+                        loveText.parentNode.removeChild(loveText);
+                    }
+                }, (duration + 2) * 1000);
+            }
+            
+            // Start continuous text creation immediately
+            startContinuousTextCreation();
+        }
+        
+        
+        function startContinuousTextCreation() {
+            const victoryScreen = document.getElementById('victoryScreen');
+            
+            function createNewText() {
+                const loveText = document.createElement('div');
+                loveText.className = 'victory-text love';
+                loveText.textContent = 'love';
+                
+                // Random horizontal position, start from top
+                loveText.style.left = Math.random() * 100 + '%';
+                loveText.style.top = '-200px'; // Start above the screen
+                loveText.style.fontSize = (Math.random() * 200 + 300) + 'px';
+                
+                // Fall down animation with variable speed - NO DELAY - smoother
+                const duration = Math.random() * 3 + 8; // 8-11 seconds for smoother movement
+                loveText.style.animation = `fallDown ${duration}s cubic-bezier(0.25, 0.46, 0.45, 0.94) infinite, fontPulse ${Math.random() * 2 + 2}s ease-in-out infinite`;
+                loveText.style.animationDelay = '0s'; // Force no delay
+                
+                victoryScreen.appendChild(loveText);
+                
+                // Remove text after it falls off screen
+                setTimeout(() => {
+                    if (loveText.parentNode) {
+                        loveText.parentNode.removeChild(loveText);
+                    }
+                }, (duration + 2) * 1000);
+            }
+            
+            // Create new text every 0.4 seconds for smoother continuous falling
+            const textInterval = setInterval(createNewText, 400);
+            
+            // Store interval ID for cleanup
+            window.textInterval = textInterval;
+        }
+        
+        function startHeartAnimation() {
+            const heartSymbols = ['♥', '💖', '💕', '💗', '💝', '💘', '💞', '💓', '💔', '💟'];
+            
+            function createHeart() {
+                const heart = document.createElement('div');
+                heart.className = 'heart';
+                heart.textContent = heartSymbols[Math.floor(Math.random() * heartSymbols.length)];
+                heart.style.left = Math.random() * 100 + '%';
+                heart.style.animationDuration = (Math.random() * 2 + 3) + 's';
+                heart.style.fontSize = (Math.random() * 15 + 20) + 'px';
+                heart.style.opacity = Math.random() * 0.5 + 0.7;
+                
+                document.body.appendChild(heart);
+                
+                // Remove heart after animation
+                setTimeout(() => {
+                    if (heart.parentNode) {
+                        heart.parentNode.removeChild(heart);
+                    }
+                }, 5000);
+            }
+            
+            // Create hearts continuously - smoother timing
+            const heartInterval = setInterval(createHeart, 200);
+            
+            // Store interval ID for cleanup
+            window.heartInterval = heartInterval;
+        }
+        
+        function restartGame() {
+            // Stop heart animation
+            if (window.heartInterval) {
+                clearInterval(window.heartInterval);
+            }
+            
+            // Stop text creation
+            if (window.textInterval) {
+                clearInterval(window.textInterval);
+            }
+            
+            // Remove all existing hearts
+            const hearts = document.querySelectorAll('.heart');
+            hearts.forEach(heart => heart.remove());
+            
+            // Remove all victory texts
+            const victoryTexts = document.querySelectorAll('.victory-text');
+            victoryTexts.forEach(text => text.remove());
+            
+            // Reset game state
+            currentDistance = 20;
+            
+            // Go back to game screen
+            showScreen('game');
+            updateDotPositions();
+            updateScoreDisplay();
+            showRandomQuestion();
+        }
+
+        // Initialize face detection
+        async function initializeFaceDetection() {
+            try {
+                faceDetector = new FaceDetection({
+                    locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/face_detection@0.4/${file}`
+                });
+                await faceDetector.setOptions({
+                    model: 'short',
+                    minDetectionConfidence: 0.5,
+                });
+                console.log('Face detection initialized');
+            } catch (error) {
+                console.error('Error initializing face detection:', error);
+                // Fallback to simple center crop if face detection fails
+            }
+        }
+
+        // Photo upload and processing functions
+        function handlePhotoUpload(dotNumber, input) {
+            const file = input.files[0];
+            if (file) {
+                uploadedPhotos[`photo${dotNumber}`] = file;
+                autoCropPhoto(file, dotNumber);
+            }
+        }
+
+        async function autoCropPhoto(file, dotNumber) {
+            showProcessingModal(`Обработка фото ${dotNumber}...`);
+            
+            try {
+                const img = new Image();
+                const reader = new FileReader();
+                
+                reader.onload = async function(e) {
+                    img.onload = async function() {
+                        try {
+                            let cropData;
+                            
+                            if (faceDetector) {
+                                // Try face detection first
+                                cropData = await detectAndCropFace(img);
+                            }
+                            
+                            if (!cropData) {
+                                // Fallback to center crop
+                                cropData = getCenterCrop(img);
+                            }
+                            
+                            const croppedFile = await cropImageToFile(img, cropData);
+                            uploadedPhotos[`photo${dotNumber}`] = croppedFile;
+                            
+                            hideProcessingModal();
+                            checkPhotosReady();
+                            
+                        } catch (error) {
+                            console.error('Error processing photo:', error);
+                            // Fallback to center crop
+                            const cropData = getCenterCrop(img);
+                            const croppedFile = await cropImageToFile(img, cropData);
+                            uploadedPhotos[`photo${dotNumber}`] = croppedFile;
+                            
+                            hideProcessingModal();
+                            checkPhotosReady();
+                        }
+                    };
+                    img.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+                
+            } catch (error) {
+                console.error('Error reading file:', error);
+                hideProcessingModal();
+            }
+        }
+
+        async function detectAndCropFace(img) {
+            try {
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+                canvas.width = img.width;
+                canvas.height = img.height;
+                ctx.drawImage(img, 0, 0);
+                
+                const detections = await faceDetector.detect(canvas);
+                
+                if (detections && detections.length > 0) {
+                    // Get the largest face
+                    const largestFace = detections.reduce((largest, current) => {
+                        const currentArea = current.boundingBox.width * current.boundingBox.height;
+                        const largestArea = largest.boundingBox.width * largest.boundingBox.height;
+                        return currentArea > largestArea ? current : largest;
+                    });
+                    
+                    const bbox = largestFace.boundingBox;
+                    
+                    // Calculate face center
+                    const faceCenterX = bbox.x + bbox.width / 2;
+                    const faceCenterY = bbox.y + bbox.height / 2;
+                    
+                    // Create square crop centered on face
+                    const cropSize = Math.max(bbox.width, bbox.height) * 1.8; // 80% larger than face
+                    const halfSize = cropSize / 2;
+                    
+                    // Center the crop on the face
+                    const x = Math.max(0, Math.min(img.width - cropSize, faceCenterX - halfSize));
+                    const y = Math.max(0, Math.min(img.height - cropSize, faceCenterY - halfSize));
+                    const width = Math.min(cropSize, img.width - x);
+                    const height = Math.min(cropSize, img.height - y);
+                    
+                    return { x, y, width, height };
+                }
+            } catch (error) {
+                console.error('Face detection error:', error);
+            }
+            return null;
+        }
+
+        function getCenterCrop(img) {
+            // Fallback: crop center square of the image
+            const cropSize = Math.min(img.width, img.height) * 0.8; // 80% of smaller dimension
+            const x = (img.width - cropSize) / 2;
+            const y = (img.height - cropSize) / 2;
+            
+            return { x, y, width: cropSize, height: cropSize };
+        }
+
+        async function cropImageToFile(img, cropData) {
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            
+            // Standard size for all faces (square)
+            const standardSize = 200; // 200x200 pixels for all faces
+            canvas.width = standardSize;
+            canvas.height = standardSize;
+            
+            // Draw cropped portion scaled to standard size
+            ctx.drawImage(
+                img,
+                cropData.x, cropData.y, cropData.width, cropData.height,
+                0, 0, standardSize, standardSize
+            );
+            
+            // Convert to blob
+            return new Promise((resolve) => {
+                canvas.toBlob(function(blob) {
+                    const croppedFile = new File([blob], `cropped_photo.jpg`, { type: 'image/jpeg' });
+                    resolve(croppedFile);
+                }, 'image/jpeg', 0.9);
+            });
+        }
+
+
+        function showProcessingModal(text) {
+            const modal = document.getElementById('processingModal');
+            const textElement = document.getElementById('processingText');
+            textElement.textContent = text;
+            modal.style.display = 'flex';
+        }
+
+        function hideProcessingModal() {
+            const modal = document.getElementById('processingModal');
+            modal.style.display = 'none';
+        }
+
+        function checkPhotosReady() {
+            const processBtn = document.getElementById('processBtn');
+            if (uploadedPhotos.photo1 && uploadedPhotos.photo2) {
+                processBtn.disabled = false;
+                processBtn.textContent = 'Process Photos';
+            } else {
+                processBtn.disabled = true;
+                processBtn.textContent = 'Upload Both Photos';
+            }
+        }
+
+        function processPhotos() {
+            const processBtn = document.getElementById('processBtn');
+            processBtn.disabled = true;
+            processBtn.textContent = 'Processing...';
+
+            // Simulate photo processing (in a real app, you'd use AI/ML services)
+            setTimeout(() => {
+                displayProcessedPhotos();
+                processBtn.textContent = 'Photos Processed!';
+                processBtn.style.backgroundColor = '#4CAF50';
+            }, 2000);
+        }
+
+        function displayProcessedPhotos() {
+            // Create image elements for the processed photos
+            const person1Img = document.getElementById('person1');
+            const person2Img = document.getElementById('person2');
+
+            // For demo purposes, we'll use the uploaded photos directly
+            // In a real implementation, you'd use AI to extract people from photos
+            if (uploadedPhotos.photo1) {
+                const reader1 = new FileReader();
+                reader1.onload = function(e) {
+                    person1Img.src = e.target.result;
+                    person1Img.style.display = 'block';
+                };
+                reader1.readAsDataURL(uploadedPhotos.photo1);
+            } else {
+                // Hide photo if not uploaded
+                person1Img.style.display = 'none';
+            }
+
+            if (uploadedPhotos.photo2) {
+                const reader2 = new FileReader();
+                reader2.onload = function(e) {
+                    person2Img.src = e.target.result;
+                    person2Img.style.display = 'block';
+                };
+                reader2.readAsDataURL(uploadedPhotos.photo2);
+            } else {
+                // Hide photo if not uploaded
+                person2Img.style.display = 'none';
+            }
+        }
+
+        // Screen management functions
+        function showScreen(screenName) {
+            // Hide all screens
+            document.getElementById('welcomeScreen').style.display = 'none';
+            document.getElementById('kissingScreen').style.display = 'none';
+            document.getElementById('fighterScreen').style.display = 'none';
+            document.getElementById('gameScreen').style.display = 'none';
+            document.getElementById('endScreen').style.display = 'none';
+            document.getElementById('victoryScreen').style.display = 'none';
+            
+            // Show the requested screen
+            switch(screenName) {
+                case 'welcome':
+                    document.getElementById('welcomeScreen').style.display = 'flex';
+                    break;
+                case 'kissing':
+                    document.getElementById('kissingScreen').style.display = 'flex';
+                    break;
+                case 'fighter':
+                    document.getElementById('fighterScreen').style.display = 'flex';
+                    break;
+                case 'game':
+                    document.getElementById('gameScreen').style.display = 'flex';
+                    break;
+                case 'end':
+                    document.getElementById('endScreen').style.display = 'flex';
+                    break;
+                case 'victory':
+                    document.getElementById('victoryScreen').style.display = 'flex';
+                    break;
+            }
+            currentScreen = screenName;
+        }
+
+        // Game flow functions
+        function showKissingScreenWithHearts() {
+            // Show heart animations
+            showHeartAnimation();
+            // Then show kissing screen
+            setTimeout(() => {
+                showScreen('kissing');
+            }, 1500);
+        }
+
+        function showKissingScreen() {
+            showScreen('kissing');
+        }
+
+        function showQuestionAndButton() {
+            // Change text to "точно?" and button to "да" simultaneously
+            const kissingText = document.getElementById('kissingText');
+            const kissButton = document.getElementById('kissButton');
+            
+            kissingText.textContent = 'точно?';
+            kissButton.textContent = 'да';
+            kissButton.onclick = showQuestionMarksAndKisses;
+            
+            // Show falling question marks from bottom
+            showQuestionMarkAnimation();
+        }
+
+        function showQuestionMarksAndKisses() {
+            // Stop the continuous question mark animation
+            if (questionMarkInterval) {
+                clearInterval(questionMarkInterval);
+                questionMarkInterval = null;
+            }
+            
+            // Remove all existing question mark elements
+            const questionMarkElements = document.querySelectorAll('.question-mark-animation');
+            questionMarkElements.forEach(element => {
+                if (element.parentNode) {
+                    element.parentNode.removeChild(element);
+                }
+            });
+            
+            // Show kiss animations immediately
+            showKissAnimation();
+            
+            // Keep text and button visible for 1.5 seconds, then transition
+            setTimeout(() => {
+                showScreen('fighter');
+            }, 1500);
+        }
+
+        function startGameWithKisses() {
+            // Show kiss animations
+            showKissAnimation();
+            // Then start game
+            setTimeout(() => {
+                showScreen('fighter');
+            }, 1500);
+        }
+
+        function startGame() {
+            showScreen('fighter');
+        }
+
+        function handleFighterUpload(fighterNumber, input) {
+            const file = input.files[0];
+            if (file) {
+                uploadedPhotos[`photo${fighterNumber}`] = file;
+                autoCropPhoto(file, fighterNumber);
+            } else {
+                // Clear the photo if no file selected
+                uploadedPhotos[`photo${fighterNumber}`] = null;
+                // Hide the photo display
+                const photoElement = document.getElementById(`person${fighterNumber}`);
+                if (photoElement) {
+                    photoElement.style.display = 'none';
+                }
+            }
+            checkFightersReady();
+        }
+
+        function updateFighterName(fighterNumber, input) {
+            fighterNames[`name${fighterNumber}`] = input.value.trim();
+            checkFightersReady();
+        }
+
+        function checkFightersReady() {
+            const startBtn = document.getElementById('startGameBtn');
+            if (fighterNames.name1 && fighterNames.name2) {
+                startBtn.disabled = false;
+                startBtn.textContent = 'Начать путь космической любви!';
+            } else {
+                startBtn.disabled = true;
+                startBtn.textContent = 'Введите имена обоих бойцов';
+            }
+        }
+
+        function beginGame() {
+            // Show mixed heart animation
+            showMixedHeartAnimation();
+            // Then start game
+            setTimeout(() => {
+                showScreen('game');
+                displayProcessedPhotos();
+                updateDotPositions();
+                updateScoreDisplay();
+                showRandomQuestion();
+            }, 1500);
+        }
+
+        function showRandomQuestion() {
+            const questionDisplay = document.getElementById('questionDisplay');
+            const questionHeader = document.getElementById('questionHeader');
+            let newQuestion;
+            
+            // Make sure we don't show the same question twice in a row
+            do {
+                newQuestion = questions[Math.floor(Math.random() * questions.length)];
+            } while (newQuestion === currentQuestion && questions.length > 1);
+            
+            // Alternate between the two names
+            const currentName = currentQuestionIndex % 2 === 0 ? fighterNames.name1 : fighterNames.name2;
+            currentQuestionIndex++;
+            
+            // Replace "партнёр" with the actual name
+            const personalizedQuestion = newQuestion.replace(/партнёр/g, currentName);
+            
+            // Clear any existing fade timeout to ensure consistent timing
+            if (headerFadeTimeout) {
+                clearTimeout(headerFadeTimeout);
+            }
+            
+            // Reset and update question header
+            questionHeader.className = 'question-header'; // Remove fade-out class
+            questionHeader.style.opacity = '1'; // Reset opacity
+            questionHeader.style.animation = 'none'; // Reset animation
+            questionHeader.textContent = `Вопрос для ${currentName}`;
+            
+            // Force reflow to ensure reset is applied
+            questionHeader.offsetHeight;
+            
+            // Start fade-out animation after exactly 4 seconds
+            headerFadeTimeout = setTimeout(() => {
+                questionHeader.classList.add('fade-out');
+                // Ensure the animation starts
+                questionHeader.style.animation = 'fadeOut 1s ease-out forwards';
+            }, 4000);
+            
+            currentQuestion = newQuestion;
+            questionDisplay.textContent = personalizedQuestion;
+        }
+
+        function showAnswerAnimation(type) {
+            const gameScreen = document.getElementById('gameScreen');
+            const animation = document.createElement('div');
+            
+            if (type === 'heart') {
+                animation.className = 'answer-heart';
+                animation.textContent = '♥';
+            } else if (type === 'broken-heart') {
+                animation.className = 'answer-broken-heart';
+                animation.textContent = '💔';
+            }
+            
+            // Position animation randomly around the center
+            const centerX = window.innerWidth / 2;
+            const centerY = window.innerHeight / 2;
+            const randomX = centerX + (Math.random() - 0.5) * 200;
+            const randomY = centerY + (Math.random() - 0.5) * 100;
+            
+            animation.style.left = randomX + 'px';
+            animation.style.top = randomY + 'px';
+            
+            gameScreen.appendChild(animation);
+            
+            // Remove animation after it completes
+            setTimeout(() => {
+                if (animation.parentNode) {
+                    animation.parentNode.removeChild(animation);
+                }
+            }, 2000);
+        }
+
+        function showHeartAnimation() {
+            // Create multiple hearts that persist across screens
+            for (let i = 0; i < 10; i++) {
+                setTimeout(() => {
+                    const heart = document.createElement('div');
+                    heart.className = 'answer-heart';
+                    heart.textContent = '♥';
+                    heart.style.position = 'fixed';
+                    heart.style.zIndex = '1003';
+                    
+                    // Position randomly around the screen
+                    const randomX = Math.random() * window.innerWidth;
+                    const randomY = Math.random() * window.innerHeight;
+                    
+                    heart.style.left = randomX + 'px';
+                    heart.style.top = randomY + 'px';
+                    
+                    document.body.appendChild(heart);
+                    
+                    // Remove after animation
+                    setTimeout(() => {
+                        if (heart.parentNode) {
+                            heart.parentNode.removeChild(heart);
+                        }
+                    }, 2000);
+                }, i * 120);
+            }
+        }
+
+        function showQuestionMarkAnimation() {
+            // Clear any existing interval
+            if (questionMarkInterval) {
+                clearInterval(questionMarkInterval);
+            }
+            
+            // Create initial batch of question marks and doubt emojis scattered across the entire screen
+            for (let i = 0; i < 50; i++) {
+                createQuestionMarkElement();
+            }
+            
+            // Start continuous creation of falling elements
+            questionMarkInterval = setInterval(() => {
+                createQuestionMarkElement();
+            }, 300); // Create new element every 300ms
+        }
+        
+        function createQuestionMarkElement() {
+            const element = document.createElement('div');
+            element.className = 'question-mark-animation';
+            
+            // Randomly choose between question mark and doubt emoji
+            const isDoubt = Math.random() < 0.5; // 50% chance for doubt emoji
+            element.textContent = isDoubt ? '🤔' : '?';
+            
+            element.style.position = 'fixed';
+            element.style.zIndex = '1003';
+            
+            // Position randomly across the entire screen (including bottom)
+            const randomX = Math.random() * window.innerWidth;
+            const randomY = Math.random() * window.innerHeight;
+            
+            element.style.left = randomX + 'px';
+            element.style.top = randomY + 'px';
+            
+            document.body.appendChild(element);
+            
+            // Remove after animation
+            setTimeout(() => {
+                if (element.parentNode) {
+                    element.parentNode.removeChild(element);
+                }
+            }, 4000); // Longer duration for slower fall
+        }
+
+        function showKissAnimation() {
+            // Create multiple kisses that persist across screens
+            for (let i = 0; i < 10; i++) {
+                setTimeout(() => {
+                    const kiss = document.createElement('div');
+                    kiss.className = 'kiss-animation';
+                    kiss.textContent = '💋';
+                    kiss.style.position = 'fixed';
+                    kiss.style.zIndex = '1003';
+                    
+                    // Position randomly around the screen
+                    const randomX = Math.random() * window.innerWidth;
+                    const randomY = Math.random() * window.innerHeight;
+                    
+                    kiss.style.left = randomX + 'px';
+                    kiss.style.top = randomY + 'px';
+                    
+                    document.body.appendChild(kiss);
+                    
+                    // Remove after animation
+                    setTimeout(() => {
+                        if (kiss.parentNode) {
+                            kiss.parentNode.removeChild(kiss);
+                        }
+                    }, 2000);
+                }, i * 120);
+            }
+        }
+
+        function showMixedHeartAnimation() {
+            // Create mixed hearts (regular and broken) that persist across screens
+            for (let i = 0; i < 10; i++) {
+                setTimeout(() => {
+                    const heart = document.createElement('div');
+                    
+                    // Randomly choose between regular heart and broken heart
+                    const isBroken = Math.random() < 0.4; // 40% chance for broken heart
+                    
+                    if (isBroken) {
+                        heart.className = 'answer-broken-heart';
+                        heart.textContent = '💔';
+                    } else {
+                        heart.className = 'answer-heart';
+                        heart.textContent = '♥';
+                    }
+                    
+                    heart.style.position = 'fixed';
+                    heart.style.zIndex = '1003';
+                    
+                    // Position randomly around the screen
+                    const randomX = Math.random() * window.innerWidth;
+                    const randomY = Math.random() * window.innerHeight;
+                    
+                    heart.style.left = randomX + 'px';
+                    heart.style.top = randomY + 'px';
+                    
+                    document.body.appendChild(heart);
+                    
+                    // Remove after animation
+                    setTimeout(() => {
+                        if (heart.parentNode) {
+                            heart.parentNode.removeChild(heart);
+                        }
+                    }, 2000);
+                }, i * 120);
+            }
+        }
+
+        function restartFromBeginning() {
+            // Reset game state
+            currentDistance = 20;
+            uploadedPhotos = { photo1: null, photo2: null };
+            fighterNames = { name1: '', name2: '' };
+            currentQuestionIndex = 0;
+            
+            // Clear uploaded photos and names
+            document.getElementById('fighter1').value = '';
+            document.getElementById('fighter2').value = '';
+            document.getElementById('name1').value = '';
+            document.getElementById('name2').value = '';
+            
+            // Hide all photos
+            document.getElementById('person1').style.display = 'none';
+            document.getElementById('person2').style.display = 'none';
+            
+            // Stop any animations
+            if (window.heartInterval) {
+                clearInterval(window.heartInterval);
+            }
+            if (window.textInterval) {
+                clearInterval(window.textInterval);
+            }
+            
+            // Remove all victory elements
+            const hearts = document.querySelectorAll('.heart');
+            hearts.forEach(heart => heart.remove());
+            const victoryTexts = document.querySelectorAll('.victory-text');
+            victoryTexts.forEach(text => text.remove());
+            
+            // Go back to welcome screen
+            showScreen('welcome');
+        }
+
+        // Override the old checkPhotosReady function
+        function checkPhotosReady() {
+            checkFightersReady();
+        }
+
+        // Initialize the page
+        window.addEventListener('load', async function() {
+            showScreen('welcome');
+            await initializeFaceDetection();
+        });
+    </script>
+</body>
+</html>
