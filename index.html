@@ -1086,6 +1086,11 @@
             }
         }
 
+        /* Background Music */
+        #backgroundMusic {
+            display: none;
+        }
+
         /* End Screen */
         .end-screen {
             position: fixed;
@@ -1123,6 +1128,13 @@
     </style>
 </head>
 <body>
+    <!-- Background Music -->
+    <audio id="backgroundMusic" loop preload="auto">
+        <source src="https://www.bensound.com/bensound-music/bensound-relaxing.mp3" type="audio/mpeg">
+        <source src="https://www.bensound.com/bensound-music/bensound-relaxing.ogg" type="audio/ogg">
+        Your browser does not support the audio element.
+    </audio>
+    
     <!-- Welcome Screen -->
     <div class="welcome-screen" id="welcomeScreen">
         <div class="welcome-text">привет, дорогуши</div>
@@ -1199,6 +1211,26 @@
     </div>
 
     <script>
+        // Background Music Setup
+        document.addEventListener('DOMContentLoaded', function() {
+            const backgroundMusic = document.getElementById('backgroundMusic');
+            
+            // Try to play music when user first interacts with the page
+            function playBackgroundMusic() {
+                if (backgroundMusic) {
+                    backgroundMusic.volume = 0.3; // Set volume to 30%
+                    backgroundMusic.play().catch(function(error) {
+                        console.log('Autoplay prevented:', error);
+                    });
+                }
+            }
+            
+            // Play music on first user interaction
+            document.addEventListener('click', playBackgroundMusic, { once: true });
+            document.addEventListener('touchstart', playBackgroundMusic, { once: true });
+            document.addEventListener('keydown', playBackgroundMusic, { once: true });
+        });
+
         let currentDistance = 20; // Total path length starts at 20
         const maxDistance = 20;
         const minDistance = 0;
