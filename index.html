@@ -1404,7 +1404,24 @@
             
             let currentTrackIndex = 0;
             let isPlaying = false;
+            let playedTracks = new Set(); // Track which tracks have been played
             
+            // Get random track index
+            function getRandomTrackIndex() {
+                // If all tracks have been played, reset the set
+                if (playedTracks.size >= musicTracks.length) {
+                    playedTracks.clear();
+                }
+                
+                let randomIndex;
+                do {
+                    randomIndex = Math.floor(Math.random() * musicTracks.length);
+                } while (playedTracks.has(randomIndex));
+                
+                playedTracks.add(randomIndex);
+                return randomIndex;
+            }
+
             // Load current track
             function loadTrack(index) {
                 const track = musicTracks[index];
@@ -1430,18 +1447,18 @@
                 playPauseBtn.textContent = '▶';
             }
             
-            // Next track
+            // Next track (random)
             function nextTrack() {
-                currentTrackIndex = (currentTrackIndex + 1) % musicTracks.length;
+                currentTrackIndex = getRandomTrackIndex();
                 loadTrack(currentTrackIndex);
                 if (isPlaying) {
                     playMusic();
                 }
             }
             
-            // Previous track
+            // Previous track (random)
             function prevTrack() {
-                currentTrackIndex = (currentTrackIndex - 1 + musicTracks.length) % musicTracks.length;
+                currentTrackIndex = getRandomTrackIndex();
                 loadTrack(currentTrackIndex);
                 if (isPlaying) {
                     playMusic();
@@ -1463,8 +1480,9 @@
             // Auto play next track when current ends
             backgroundMusic.addEventListener('ended', nextTrack);
             
-            // Initialize with first track
-            loadTrack(0);
+            // Initialize with random track
+            currentTrackIndex = getRandomTrackIndex();
+            loadTrack(currentTrackIndex);
             
             // Try to play music when user first interacts with the page
             function playBackgroundMusic() {
