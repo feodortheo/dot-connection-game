@@ -1130,8 +1130,8 @@
 <body>
     <!-- Background Music -->
     <audio id="backgroundMusic" loop preload="auto">
-        <source src="https://www.bensound.com/bensound-music/bensound-relaxing.mp3" type="audio/mpeg">
-        <source src="https://www.bensound.com/bensound-music/bensound-relaxing.ogg" type="audio/ogg">
+        <source src="https://www.bensound.com/bensound-music/bensound-pianomoment.mp3" type="audio/mpeg">
+        <source src="https://www.bensound.com/bensound-music/bensound-pianomoment.ogg" type="audio/ogg">
         Your browser does not support the audio element.
     </audio>
     
@@ -1218,7 +1218,7 @@
             // Try to play music when user first interacts with the page
             function playBackgroundMusic() {
                 if (backgroundMusic) {
-                    backgroundMusic.volume = 0.3; // Set volume to 30%
+                    backgroundMusic.volume = 0.15; // Set volume to 15% for more relaxing experience
                     backgroundMusic.play().catch(function(error) {
                         console.log('Autoplay prevented:', error);
                     });
