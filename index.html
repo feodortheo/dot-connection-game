@@ -2066,7 +2066,9 @@
             const root = document.querySelector('.root');
             
             // Determine which player answered (alternating)
-            const currentPlayer = currentQuestionIndex % 2 === 0 ? 'player1' : 'player2';
+            // Note: currentQuestionIndex was already incremented in showRandomQuestion()
+            // So we need to use the previous index to determine who answered
+            const currentPlayer = (currentQuestionIndex - 1) % 2 === 0 ? 'player1' : 'player2';
             playerStats[currentPlayer].total++;
             
             if (action === 'correct') {
