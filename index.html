@@ -1645,204 +1645,6 @@
     </div>
 
     <script>
-        // Background Music Setup
-        document.addEventListener('DOMContentLoaded', function() {
-            const backgroundMusic = document.getElementById('backgroundMusic');
-            const playPauseBtn = document.getElementById('playPause');
-            const prevTrackBtn = document.getElementById('prevTrack');
-            const nextTrackBtn = document.getElementById('nextTrack');
-            const trackTitle = document.getElementById('trackTitle');
-            
-            // Only romantic and relaxing music tracks (no watermarks, no active music)
-            const musicTracks = [
-                { title: "Момент пианино", url: "https://www.bensound.com/bensound-music/bensound-pianomoment.mp3" },
-                { title: "Мирный разум", url: "https://www.bensound.com/bensound-music/bensound-peaceful.mp3" },
-                { title: "Нежный ветерок", url: "https://www.bensound.com/bensound-music/bensound-gentle.mp3" },
-                { title: "Сладкие сны", url: "https://www.bensound.com/bensound-music/bensound-sweet.mp3" },
-                { title: "Нежные моменты", url: "https://www.bensound.com/bensound-music/bensound-tender.mp3" },
-                { title: "Тихий шёпот", url: "https://www.bensound.com/bensound-music/bensound-soft.mp3" },
-                { title: "Струны сердца", url: "https://www.bensound.com/bensound-music/bensound-heart.mp3" },
-                { title: "Океанская безмятежность", url: "https://www.bensound.com/bensound-music/bensound-ocean.mp3" },
-                { title: "Лесная гармония", url: "https://www.bensound.com/bensound-music/bensound-forest.mp3" },
-                { title: "Кристальная любовь", url: "https://www.bensound.com/bensound-music/bensound-crystal.mp3" },
-                { title: "Золотой час", url: "https://www.bensound.com/bensound-music/bensound-golden.mp3" },
-                { title: "Серебряная романтика", url: "https://www.bensound.com/bensound-music/bensound-silver.mp3" },
-                { title: "Голубая романтика", url: "https://www.bensound.com/bensound-music/bensound-blue.mp3" },
-                { title: "Белая романтика", url: "https://www.bensound.com/bensound-music/bensound-white.mp3" },
-                { title: "Розовая романтика", url: "https://www.bensound.com/bensound-music/bensound-pink.mp3" },
-                { title: "Лавандовая любовь", url: "https://www.bensound.com/bensound-music/bensound-lavender.mp3" },
-                { title: "Розовый сад", url: "https://www.bensound.com/bensound-music/bensound-rose.mp3" },
-                { title: "Лилейная любовь", url: "https://www.bensound.com/bensound-music/bensound-lily.mp3" }
-            ];
-            
-            let currentTrackIndex = 0;
-            let isPlaying = false;
-            let playedTracks = new Set(); // Track which tracks have been played
-            
-            // Get random track index
-            function getRandomTrackIndex() {
-                // If all tracks have been played, reset the set
-                if (playedTracks.size >= musicTracks.length) {
-                    playedTracks.clear();
-                }
-                
-                let randomIndex;
-                do {
-                    randomIndex = Math.floor(Math.random() * musicTracks.length);
-                } while (playedTracks.has(randomIndex));
-                
-                playedTracks.add(randomIndex);
-                return randomIndex;
-            }
-
-            // Load current track
-            function loadTrack(index) {
-                const track = musicTracks[index];
-                backgroundMusic.src = track.url;
-                trackTitle.textContent = track.title;
-                console.log(`Loading track: ${track.title}`);
-            }
-            
-            // Play music with better error handling
-            function playMusic() {
-                backgroundMusic.volume = 0.15;
-                
-                // Try to play the current track
-                const playPromise = backgroundMusic.play();
-                
-                if (playPromise !== undefined) {
-                    playPromise.then(() => {
-                    isPlaying = true;
-                    playPauseBtn.textContent = '⏸';
-                        console.log(`Now playing: ${musicTracks[currentTrackIndex].title}`);
-                }).catch(function(error) {
-                    console.log('Play prevented:', error);
-                        isPlaying = false;
-                        playPauseBtn.textContent = '▶';
-                        // Don't auto-switch tracks on play error, let user try again
-                });
-                }
-            }
-            
-            // Pause music
-            function pauseMusic() {
-                backgroundMusic.pause();
-                isPlaying = false;
-                playPauseBtn.textContent = '▶';
-            }
-            
-            // Toggle play/pause
-            function togglePlayPause() {
-                if (isPlaying) {
-                    pauseMusic();
-                } else {
-                    playMusic();
-                }
-            }
-            
-            // Next track (random)
-            function nextTrack() {
-                currentTrackIndex = getRandomTrackIndex();
-                loadTrack(currentTrackIndex);
-                if (isPlaying) {
-                    setTimeout(() => {
-                    playMusic();
-                    }, 1000); // Longer delay to ensure track is loaded
-                }
-            }
-            
-            // Previous track (random)
-            function prevTrack() {
-                currentTrackIndex = getRandomTrackIndex();
-                loadTrack(currentTrackIndex);
-                if (isPlaying) {
-                    setTimeout(() => {
-                    playMusic();
-                    }, 500); // Small delay to ensure track is loaded
-                }
-            }
-            
-            // Event listeners
-            playPauseBtn.addEventListener('click', togglePlayPause);
-            nextTrackBtn.addEventListener('click', nextTrack);
-            prevTrackBtn.addEventListener('click', prevTrack);
-            
-            // Auto play next track when current ends
-            backgroundMusic.addEventListener('ended', function() {
-                console.log('Track ended, playing next...');
-                if (isPlaying) {
-                    nextTrack();
-                }
-            });
-            
-            // Auto play next track when track fails to load (with limit)
-            let errorCount = 0;
-            backgroundMusic.addEventListener('error', function() {
-                errorCount++;
-                console.log(`Track failed to load (${errorCount}/3), trying next...`);
-                if (errorCount < 3 && isPlaying) {
-                    nextTrack();
-                } else if (errorCount >= 3) {
-                    console.log('Too many track errors, stopping music');
-                    pauseMusic();
-                    errorCount = 0; // Reset for next attempt
-                }
-            });
-            
-            // Initialize with random track
-            currentTrackIndex = getRandomTrackIndex();
-            loadTrack(currentTrackIndex);
-            
-            // Initialize UI
-            updateMusicPlayerUI();
-            
-            // Try to play music when user first interacts with the page
-            function playBackgroundMusic() {
-                if (!isPlaying) {
-                    console.log('Attempting to play background music...');
-                    // Ensure we have a valid track loaded
-                    if (!backgroundMusic.src) {
-                        loadTrack(currentTrackIndex);
-                    }
-                    setTimeout(() => {
-                        playMusic();
-                    }, 200);
-                }
-            }
-            
-            // Play music on first user interaction
-            document.addEventListener('click', playBackgroundMusic, { once: true });
-            document.addEventListener('touchstart', playBackgroundMusic, { once: true });
-            document.addEventListener('keydown', playBackgroundMusic, { once: true });
-            
-            // Also try to play music when welcome button is clicked
-            document.addEventListener('click', function(e) {
-                if (e.target.classList.contains('welcome-button')) {
-                    console.log('Welcome button clicked, trying to play music...');
-                    setTimeout(playBackgroundMusic, 100);
-                }
-            });
-            
-            // Try to play music when any button is clicked
-            document.addEventListener('click', function(e) {
-                if (e.target.tagName === 'BUTTON' && !isPlaying) {
-                    console.log('Button clicked, trying to play music...');
-                    setTimeout(playBackgroundMusic, 50);
-                }
-            });
-            
-            // Add visual feedback for music player
-            function updateMusicPlayerUI() {
-                if (isPlaying) {
-                    playPauseBtn.textContent = '⏸';
-                    playPauseBtn.style.backgroundColor = '#ff69b4';
-                } else {
-                    playPauseBtn.textContent = '▶';
-                    playPauseBtn.style.backgroundColor = '#ff69b4';
-                }
-            }
-            
-        });
 
         let currentDistance = 20; // Total path length starts at 20
         const maxDistance = 20;
@@ -1853,8 +1655,127 @@
         let currentScreen = 'welcome';
         let currentQuestion = '';
         let currentQuestionIndex = 0; // To alternate between names
+        
+        // Music system variables
+        let backgroundMusic, playPauseBtn, prevTrackBtn, nextTrackBtn, trackTitle;
+        let musicTracks = [
+            { title: "Момент пианино", url: "https://www.bensound.com/bensound-music/bensound-pianomoment.mp3" },
+            { title: "Мирный разум", url: "https://www.bensound.com/bensound-music/bensound-peaceful.mp3" },
+            { title: "Нежный ветерок", url: "https://www.bensound.com/bensound-music/bensound-gentle.mp3" },
+            { title: "Сладкие сны", url: "https://www.bensound.com/bensound-music/bensound-sweet.mp3" },
+            { title: "Нежные моменты", url: "https://www.bensound.com/bensound-music/bensound-tender.mp3" },
+            { title: "Тихий шёпот", url: "https://www.bensound.com/bensound-music/bensound-soft.mp3" },
+            { title: "Струны сердца", url: "https://www.bensound.com/bensound-music/bensound-heart.mp3" },
+            { title: "Океанская безмятежность", url: "https://www.bensound.com/bensound-music/bensound-ocean.mp3" },
+            { title: "Лесная гармония", url: "https://www.bensound.com/bensound-music/bensound-forest.mp3" },
+            { title: "Кристальная любовь", url: "https://www.bensound.com/bensound-music/bensound-crystal.mp3" },
+            { title: "Золотой час", url: "https://www.bensound.com/bensound-music/bensound-golden.mp3" },
+            { title: "Серебряная романтика", url: "https://www.bensound.com/bensound-music/bensound-silver.mp3" },
+            { title: "Голубая романтика", url: "https://www.bensound.com/bensound-music/bensound-blue.mp3" },
+            { title: "Белая романтика", url: "https://www.bensound.com/bensound-music/bensound-white.mp3" },
+            { title: "Розовая романтика", url: "https://www.bensound.com/bensound-music/bensound-pink.mp3" },
+            { title: "Лавандовая любовь", url: "https://www.bensound.com/bensound-music/bensound-lavender.mp3" },
+            { title: "Розовый сад", url: "https://www.bensound.com/bensound-music/bensound-rose.mp3" },
+            { title: "Лилейная любовь", url: "https://www.bensound.com/bensound-music/bensound-lily.mp3" }
+        ];
+        let currentTrackIndex = 0;
+        let isPlaying = false;
+        let playedTracks = new Set();
+        let errorCount = 0;
         let headerFadeTimeout = null;
         let questionMarkInterval = null;
+        
+        // Music system functions
+        function getRandomTrackIndex() {
+            if (playedTracks.size >= musicTracks.length) {
+                playedTracks.clear();
+            }
+            let randomIndex;
+            do {
+                randomIndex = Math.floor(Math.random() * musicTracks.length);
+            } while (playedTracks.has(randomIndex));
+            playedTracks.add(randomIndex);
+            return randomIndex;
+        }
+
+        function loadTrack(index) {
+            const track = musicTracks[index];
+            backgroundMusic.src = track.url;
+            trackTitle.textContent = track.title;
+            console.log(`Loading track: ${track.title}`);
+        }
+        
+        function playMusic() {
+            backgroundMusic.volume = 0.15;
+            const playPromise = backgroundMusic.play();
+            if (playPromise !== undefined) {
+                playPromise.then(() => {
+                    isPlaying = true;
+                    playPauseBtn.textContent = '⏸';
+                    console.log(`Now playing: ${musicTracks[currentTrackIndex].title}`);
+                }).catch(function(error) {
+                    console.log('Play prevented:', error);
+                    isPlaying = false;
+                    playPauseBtn.textContent = '▶';
+                });
+            }
+        }
+        
+        function pauseMusic() {
+            backgroundMusic.pause();
+            isPlaying = false;
+            playPauseBtn.textContent = '▶';
+        }
+        
+        function togglePlayPause() {
+            if (isPlaying) {
+                pauseMusic();
+            } else {
+                playMusic();
+            }
+        }
+        
+        function nextTrack() {
+            currentTrackIndex = getRandomTrackIndex();
+            loadTrack(currentTrackIndex);
+            if (isPlaying) {
+                setTimeout(() => {
+                    playMusic();
+                }, 1000);
+            }
+        }
+        
+        function prevTrack() {
+            currentTrackIndex = getRandomTrackIndex();
+            loadTrack(currentTrackIndex);
+            if (isPlaying) {
+                setTimeout(() => {
+                    playMusic();
+                }, 1000);
+            }
+        }
+        
+        function updateMusicPlayerUI() {
+            if (isPlaying) {
+                playPauseBtn.textContent = '⏸';
+                playPauseBtn.style.backgroundColor = '#ff69b4';
+            } else {
+                playPauseBtn.textContent = '▶';
+                playPauseBtn.style.backgroundColor = '#ff69b4';
+            }
+        }
+        
+        function playBackgroundMusic() {
+            if (!isPlaying) {
+                console.log('Attempting to play background music...');
+                if (!backgroundMusic.src) {
+                    loadTrack(currentTrackIndex);
+                }
+                setTimeout(() => {
+                    playMusic();
+                }, 200);
+            }
+        }
         
         // Statistics tracking
         let playerStats = {
@@ -3014,7 +2935,50 @@
             updateDotPositions();
             // Check if fighters are ready (names only, photos optional)
             checkFightersReady();
+            
             // Initialize music system
+            backgroundMusic = document.getElementById('backgroundMusic');
+            playPauseBtn = document.getElementById('playPause');
+            prevTrackBtn = document.getElementById('prevTrack');
+            nextTrackBtn = document.getElementById('nextTrack');
+            trackTitle = document.getElementById('trackTitle');
+            
+            // Set up music event listeners
+            playPauseBtn.addEventListener('click', togglePlayPause);
+            prevTrackBtn.addEventListener('click', prevTrack);
+            nextTrackBtn.addEventListener('click', nextTrack);
+            
+            // Auto play next track when current ends
+            backgroundMusic.addEventListener('ended', function() {
+                console.log('Track ended, playing next...');
+                if (isPlaying) {
+                    nextTrack();
+                }
+            });
+            
+            // Auto play next track when track fails to load (with limit)
+            backgroundMusic.addEventListener('error', function() {
+                errorCount++;
+                console.log(`Track failed to load (${errorCount}/3), trying next...`);
+                if (errorCount < 3 && isPlaying) {
+                    nextTrack();
+                } else if (errorCount >= 3) {
+                    console.log('Too many track errors, stopping music');
+                    pauseMusic();
+                    errorCount = 0;
+                }
+            });
+            
+            // Initialize with random track
+            currentTrackIndex = getRandomTrackIndex();
+            loadTrack(currentTrackIndex);
+            updateMusicPlayerUI();
+            
+            // Play music on first user interaction
+            document.addEventListener('click', playBackgroundMusic, { once: true });
+            document.addEventListener('touchstart', playBackgroundMusic, { once: true });
+            document.addEventListener('keydown', playBackgroundMusic, { once: true });
+            
             console.log('Page loaded, music system ready');
         });
     </script>
