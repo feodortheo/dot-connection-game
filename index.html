@@ -820,6 +820,34 @@
                 padding: 12px 20px;
                 font-size: 16px;
             }
+            
+            /* Statistics screen mobile styles */
+            .stats-title {
+                font-size: 28px;
+                margin-bottom: 30px;
+            }
+            
+            .stats-container {
+                gap: 40px;
+                flex-direction: column;
+            }
+            
+            .player-photo-stat {
+                width: 120px;
+                height: 120px;
+            }
+            
+            .player-name-stat {
+                font-size: 20px;
+            }
+            
+            .player-percentage {
+                font-size: 28px;
+            }
+            
+            .player-details {
+                font-size: 14px;
+            }
         }
 
         @media (max-width: 480px) {
@@ -869,6 +897,33 @@
                 font-size: 14px;
                 padding: 12px 15px;
                 max-width: 95%;
+            }
+            
+            /* Statistics screen small mobile styles */
+            .stats-title {
+                font-size: 24px;
+                margin-bottom: 25px;
+            }
+            
+            .stats-container {
+                gap: 30px;
+            }
+            
+            .player-photo-stat {
+                width: 100px;
+                height: 100px;
+            }
+            
+            .player-name-stat {
+                font-size: 18px;
+            }
+            
+            .player-percentage {
+                font-size: 24px;
+            }
+            
+            .player-details {
+                font-size: 12px;
             }
         }
 
@@ -1230,6 +1285,83 @@
             text-align: center;
         }
 
+        /* Statistics Screen */
+        .stats-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: #000;
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .stats-title {
+            font-size: 42px;
+            color: #ff69b4;
+            font-weight: bold;
+            text-shadow: 0 0 20px #ff69b4;
+            margin-bottom: 50px;
+            text-align: center;
+        }
+
+        .stats-container {
+            display: flex;
+            gap: 80px;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .player-stat {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+
+        .player-photo-stat {
+            width: 150px;
+            height: 150px;
+            object-fit: cover;
+            object-position: center center;
+            border: 4px solid #ff69b4;
+            border-radius: 50%;
+            margin-bottom: 20px;
+            box-shadow: 0 0 30px rgba(255, 105, 180, 0.5);
+            animation: headGlow 2s ease-in-out infinite alternate;
+        }
+
+        .player-name-stat {
+            font-size: 24px;
+            color: #ff69b4;
+            font-weight: bold;
+            margin-bottom: 15px;
+            text-shadow: 0 0 10px #ff69b4;
+        }
+
+        .player-percentage {
+            font-size: 36px;
+            color: #ff69b4;
+            font-weight: bold;
+            text-shadow: 0 0 15px #ff69b4;
+            margin-bottom: 10px;
+        }
+
+        .player-details {
+            font-size: 16px;
+            color: #ff69b4;
+            opacity: 0.8;
+        }
+
+        .stats-restart-btn {
+            margin-top: 50px;
+        }
+
         @keyframes buttonGlow {
             0% {
                 box-shadow: 0 0 20px rgba(255, 105, 180, 0.5), 0 0 40px rgba(255, 105, 180, 0.3), 0 0 60px rgba(255, 105, 180, 0.1);
@@ -1327,7 +1459,27 @@
 
     <!-- Victory Screen -->
     <div class="victory-screen" id="victoryScreen">
-        <button class="restart-btn" onclick="restartGame()">Играть снова</button>
+        <button class="restart-btn" onclick="showStatsScreen()">Показать статистику</button>
+    </div>
+
+    <!-- Statistics Screen -->
+    <div class="stats-screen" id="statsScreen">
+        <div class="stats-title">Статистика игроков</div>
+        <div class="stats-container">
+            <div class="player-stat">
+                <img id="player1StatPhoto" class="player-photo-stat" alt="Player 1">
+                <div id="player1StatName" class="player-name-stat"></div>
+                <div id="player1StatPercentage" class="player-percentage"></div>
+                <div id="player1StatDetails" class="player-details"></div>
+            </div>
+            <div class="player-stat">
+                <img id="player2StatPhoto" class="player-photo-stat" alt="Player 2">
+                <div id="player2StatName" class="player-name-stat"></div>
+                <div id="player2StatPercentage" class="player-percentage"></div>
+                <div id="player2StatDetails" class="player-details"></div>
+            </div>
+        </div>
+        <button class="restart-btn stats-restart-btn" onclick="restartFromBeginning()">Играть снова</button>
     </div>
 
     <!-- Processing Modal -->
@@ -1503,6 +1655,12 @@
         let headerFadeTimeout = null;
         let questionMarkInterval = null;
         
+        // Statistics tracking
+        let playerStats = {
+            player1: { correct: 0, total: 0, name: '' },
+            player2: { correct: 0, total: 0, name: '' }
+        };
+        
         // Array of absurd Russian questions
         const questions = [
             "Если бы партнёр был овощем, то каким именно и как бы он умер?",
@@ -1612,11 +1770,17 @@
             const dot2 = document.querySelector('.dot2');
             const root = document.querySelector('.root');
             
+            // Determine which player answered (alternating)
+            const currentPlayer = currentQuestionIndex % 2 === 0 ? 'player1' : 'player2';
+            playerStats[currentPlayer].total++;
+            
             if (action === 'correct') {
                 // Move dots 1 unit closer
                 currentDistance = Math.max(minDistance, currentDistance - 1);
                 // Show heart animation
                 showAnswerAnimation('heart');
+                // Update stats
+                playerStats[currentPlayer].correct++;
             } else if (action === 'incorrect') {
                 // Move dots 0.5 units apart
                 currentDistance = Math.min(maxDistance, currentDistance + 0.5);
@@ -2054,6 +2218,7 @@
             document.getElementById('gameScreen').style.display = 'none';
             document.getElementById('endScreen').style.display = 'none';
             document.getElementById('victoryScreen').style.display = 'none';
+            document.getElementById('statsScreen').style.display = 'none';
             
             // Show the requested screen
             switch(screenName) {
@@ -2074,6 +2239,9 @@
                     break;
                 case 'victory':
                     document.getElementById('victoryScreen').style.display = 'flex';
+                    break;
+                case 'stats':
+                    document.getElementById('statsScreen').style.display = 'flex';
                     break;
             }
             currentScreen = screenName;
@@ -2178,6 +2346,14 @@
         }
 
         function beginGame() {
+            // Initialize player stats with names
+            playerStats.player1.name = fighterNames.name1;
+            playerStats.player2.name = fighterNames.name2;
+            playerStats.player1.correct = 0;
+            playerStats.player1.total = 0;
+            playerStats.player2.correct = 0;
+            playerStats.player2.total = 0;
+            
             // Show mixed heart animation
             showMixedHeartAnimation();
             // Then start game
@@ -2407,12 +2583,86 @@
             }
         }
 
+        function showStatsScreen() {
+            // Stop heart animation
+            if (window.heartInterval) {
+                clearInterval(window.heartInterval);
+            }
+            
+            // Stop text creation
+            if (window.textInterval) {
+                clearInterval(window.textInterval);
+            }
+            
+            // Remove all existing hearts
+            const hearts = document.querySelectorAll('.heart');
+            hearts.forEach(heart => heart.remove());
+            
+            // Remove all victory texts
+            const victoryTexts = document.querySelectorAll('.victory-text');
+            victoryTexts.forEach(text => text.remove());
+            
+            // Calculate and display statistics
+            displayPlayerStats();
+            
+            // Show statistics screen
+            showScreen('stats');
+        }
+
+        function displayPlayerStats() {
+            // Display player 1 stats
+            const player1Photo = document.getElementById('player1StatPhoto');
+            const player1Name = document.getElementById('player1StatName');
+            const player1Percentage = document.getElementById('player1StatPercentage');
+            const player1Details = document.getElementById('player1StatDetails');
+            
+            // Display player 2 stats
+            const player2Photo = document.getElementById('player2StatPhoto');
+            const player2Name = document.getElementById('player2StatName');
+            const player2Percentage = document.getElementById('player2StatPercentage');
+            const player2Details = document.getElementById('player2StatDetails');
+            
+            // Calculate percentages
+            const player1Percent = playerStats.player1.total > 0 ? 
+                Math.round((playerStats.player1.correct / playerStats.player1.total) * 100) : 0;
+            const player2Percent = playerStats.player2.total > 0 ? 
+                Math.round((playerStats.player2.correct / playerStats.player2.total) * 100) : 0;
+            
+            // Set player 1 data
+            if (uploadedPhotos.photo1) {
+                const reader1 = new FileReader();
+                reader1.onload = function(e) {
+                    player1Photo.src = e.target.result;
+                };
+                reader1.readAsDataURL(uploadedPhotos.photo1);
+            }
+            player1Name.textContent = playerStats.player1.name;
+            player1Percentage.textContent = `${player1Percent}%`;
+            player1Details.textContent = `${playerStats.player1.correct} из ${playerStats.player1.total} правильных`;
+            
+            // Set player 2 data
+            if (uploadedPhotos.photo2) {
+                const reader2 = new FileReader();
+                reader2.onload = function(e) {
+                    player2Photo.src = e.target.result;
+                };
+                reader2.readAsDataURL(uploadedPhotos.photo2);
+            }
+            player2Name.textContent = playerStats.player2.name;
+            player2Percentage.textContent = `${player2Percent}%`;
+            player2Details.textContent = `${playerStats.player2.correct} из ${playerStats.player2.total} правильных`;
+        }
+
         function restartFromBeginning() {
             // Reset game state
             currentDistance = 20;
             uploadedPhotos = { photo1: null, photo2: null };
             fighterNames = { name1: '', name2: '' };
             currentQuestionIndex = 0;
+            
+            // Reset player stats
+            playerStats.player1 = { correct: 0, total: 0, name: '' };
+            playerStats.player2 = { correct: 0, total: 0, name: '' };
             
             // Clear uploaded photos and names
             document.getElementById('fighter1').value = '';
