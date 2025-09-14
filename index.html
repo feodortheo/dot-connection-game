@@ -53,16 +53,17 @@
             top: 50%;
             transform: translateY(-50%);
             transition: all 0.5s ease;
-            box-shadow: 0 0 10px rgba(255, 105, 180, 0.8);
+            box-shadow: 0 0 15px rgba(255, 105, 180, 1), 0 0 30px rgba(255, 105, 180, 0.6);
             z-index: 5;
+            border: 2px solid #fff;
         }
 
         .dot1 {
-            left: 50px;
+            /* Position will be set by JavaScript */
         }
 
         .dot2 {
-            right: 50px;
+            /* Position will be set by JavaScript */
         }
 
         .root {
@@ -382,12 +383,14 @@
             top: -110px;
             left: -50px;
             position: absolute;
+            transform: translateZ(0);
         }
 
         .person-photo.dot2-photo {
             top: -110px;
             right: -50px;
             position: absolute;
+            transform: translateZ(0);
         }
 
         .processing-modal {
@@ -1648,6 +1651,13 @@
             document.addEventListener('click', playBackgroundMusic, { once: true });
             document.addEventListener('touchstart', playBackgroundMusic, { once: true });
             document.addEventListener('keydown', playBackgroundMusic, { once: true });
+            
+            // Also try to play music when welcome button is clicked
+            document.addEventListener('click', function(e) {
+                if (e.target.classList.contains('welcome-button')) {
+                    setTimeout(playBackgroundMusic, 100);
+                }
+            });
         });
 
         let currentDistance = 20; // Total path length starts at 20
@@ -2708,6 +2718,8 @@
         window.addEventListener('load', async function() {
             showScreen('welcome');
             await initializeFaceDetection();
+            // Initialize dot positions
+            updateDotPositions();
         });
     </script>
 </body>
