@@ -1,4 +1,5 @@
 
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -1386,9 +1387,9 @@
 </head>
 <body>
     <!-- Background Music -->
-    <audio id="backgroundMusic" loop preload="auto">
-        <source src="https://www.bensound.com/bensound-music/bensound-pianomoment.mp3" type="audio/mpeg">
-        <source src="https://www.bensound.com/bensound-music/bensound-pianomoment.ogg" type="audio/ogg">
+    <audio id="backgroundMusic" loop preload="auto" crossorigin="anonymous">
+        <source src="https://files.freemusicarchive.org/storage-freemusicarchive-org/music/no_curator/Kevin_MacLeod/Impact/Kevin_MacLeod_-_Heartbreaking.mp3" type="audio/mpeg">
+        <source src="https://archive.org/download/Kevin_MacLeod_-_Heartbreaking/Kevin_MacLeod_-_Heartbreaking.mp3" type="audio/mpeg">
         Your browser does not support the audio element.
     </audio>
     
@@ -1400,7 +1401,7 @@
             <button id="playPause" class="music-btn">▶</button>
             <button id="nextTrack" class="music-btn">⏭</button>
             <div class="track-info">
-                <span id="trackTitle">Момент пианино</span>
+                <span id="trackTitle">Heartbreaking</span>
             </div>
         </div>
     </div>
@@ -1509,53 +1510,18 @@
             const nextTrackBtn = document.getElementById('nextTrack');
             const trackTitle = document.getElementById('trackTitle');
             
-            // Calm instrumental music tracks (clean, no watermarks, no drums)
+            // Free romantic and calm music tracks from reliable sources
             const musicTracks = [
-                { title: "Момент пианино", url: "https://www.bensound.com/bensound-music/bensound-pianomoment.mp3" },
-                { title: "Мирный разум", url: "https://www.bensound.com/bensound-music/bensound-peaceful.mp3" },
-                { title: "Нежный ветерок", url: "https://www.bensound.com/bensound-music/bensound-gentle.mp3" },
-                { title: "Сладкие сны", url: "https://www.bensound.com/bensound-music/bensound-sweet.mp3" },
-                { title: "Нежные моменты", url: "https://www.bensound.com/bensound-music/bensound-tender.mp3" },
-                { title: "Тихий шёпот", url: "https://www.bensound.com/bensound-music/bensound-soft.mp3" },
-                { title: "Струны сердца", url: "https://www.bensound.com/bensound-music/bensound-heart.mp3" },
-                { title: "Лунная романтика", url: "https://www.bensound.com/bensound-music/bensound-moonlight.mp3" },
-                { title: "Океанская безмятежность", url: "https://www.bensound.com/bensound-music/bensound-ocean.mp3" },
-                { title: "Лесная гармония", url: "https://www.bensound.com/bensound-music/bensound-forest.mp3" },
-                { title: "Утренняя радость", url: "https://www.bensound.com/bensound-music/bensound-morning.mp3" },
-                { title: "Вечерняя романтика", url: "https://www.bensound.com/bensound-music/bensound-evening.mp3" },
-                { title: "Весенняя любовь", url: "https://www.bensound.com/bensound-music/bensound-spring.mp3" },
-                { title: "Золотая осень", url: "https://www.bensound.com/bensound-music/bensound-autumn.mp3" },
-                { title: "Зимнее чудо", url: "https://www.bensound.com/bensound-music/bensound-winter.mp3" },
-                { title: "Кристальная любовь", url: "https://www.bensound.com/bensound-music/bensound-crystal.mp3" },
-                { title: "Золотой час", url: "https://www.bensound.com/bensound-music/bensound-golden.mp3" },
-                { title: "Серебряная романтика", url: "https://www.bensound.com/bensound-music/bensound-silver.mp3" },
-                { title: "Голубая романтика", url: "https://www.bensound.com/bensound-music/bensound-blue.mp3" },
-                { title: "Зелёный рай", url: "https://www.bensound.com/bensound-music/bensound-green.mp3" },
-                { title: "Белая романтика", url: "https://www.bensound.com/bensound-music/bensound-white.mp3" },
-                { title: "Элегантная любовь", url: "https://www.bensound.com/bensound-music/bensound-black.mp3" },
-                { title: "Розовая романтика", url: "https://www.bensound.com/bensound-music/bensound-pink.mp3" },
-                { title: "Оранжевая радость", url: "https://www.bensound.com/bensound-music/bensound-orange.mp3" },
-                { title: "Жёлтое счастье", url: "https://www.bensound.com/bensound-music/bensound-yellow.mp3" },
-                { title: "Индиго романтика", url: "https://www.bensound.com/bensound-music/bensound-indigo.mp3" },
-                { title: "Бирюзовая любовь", url: "https://www.bensound.com/bensound-music/bensound-turquoise.mp3" },
-                { title: "Коралловая романтика", url: "https://www.bensound.com/bensound-music/bensound-coral.mp3" },
-                { title: "Лавандовая любовь", url: "https://www.bensound.com/bensound-music/bensound-lavender.mp3" },
-                { title: "Свежая мятная любовь", url: "https://www.bensound.com/bensound-music/bensound-mint.mp3" },
-                { title: "Персиковая романтика", url: "https://www.bensound.com/bensound-music/bensound-peach.mp3" },
-                { title: "Розовый сад", url: "https://www.bensound.com/bensound-music/bensound-rose.mp3" },
-                { title: "Лилейная любовь", url: "https://www.bensound.com/bensound-music/bensound-lily.mp3" },
-                { title: "Ромашковая романтика", url: "https://www.bensound.com/bensound-music/bensound-daisy.mp3" },
-                { title: "Тюльпановая любовь", url: "https://www.bensound.com/bensound-music/bensound-tulip.mp3" },
-                { title: "Подсолнечная радость", url: "https://www.bensound.com/bensound-music/bensound-sunflower.mp3" },
-                { title: "Орхидейная романтика", url: "https://www.bensound.com/bensound-music/bensound-orchid.mp3" },
-                { title: "Жасминовая любовь", url: "https://www.bensound.com/bensound-music/bensound-jasmine.mp3" },
-                { title: "Лотосовая романтика", url: "https://www.bensound.com/bensound-music/bensound-lotus.mp3" },
-                { title: "Магнолиевая любовь", url: "https://www.bensound.com/bensound-music/bensound-magnolia.mp3" },
-                { title: "Вишнёвая романтика", url: "https://www.bensound.com/bensound-music/bensound-cherry.mp3" },
-                { title: "Яблочная любовь", url: "https://www.bensound.com/bensound-music/bensound-apple.mp3" },
-                { title: "Грушевая романтика", url: "https://www.bensound.com/bensound-music/bensound-pear.mp3" },
-                { title: "Сливовая любовь", url: "https://www.bensound.com/bensound-music/bensound-plum.mp3" },
-                { title: "Виноградная романтика", url: "https://www.bensound.com/bensound-music/bensound-grape.mp3" }
+                { title: "Heartbreaking", url: "https://files.freemusicarchive.org/storage-freemusicarchive-org/music/no_curator/Kevin_MacLeod/Impact/Kevin_MacLeod_-_Heartbreaking.mp3" },
+                { title: "Carefree", url: "https://files.freemusicarchive.org/storage-freemusicarchive-org/music/no_curator/Kevin_MacLeod/Impact/Kevin_MacLeod_-_Carefree.mp3" },
+                { title: "A New Beginning", url: "https://files.freemusicarchive.org/storage-freemusicarchive-org/music/no_curator/Kevin_MacLeod/Impact/Kevin_MacLeod_-_A_New_Beginning.mp3" },
+                { title: "Amazing Grace", url: "https://files.freemusicarchive.org/storage-freemusicarchive-org/music/no_curator/Kevin_MacLeod/Classical/Kevin_MacLeod_-_Amazing_Grace.mp3" },
+                { title: "Canon in D Major", url: "https://files.freemusicarchive.org/storage-freemusicarchive-org/music/no_curator/Kevin_MacLeod/Classical/Kevin_MacLeod_-_Canon_in_D_Major.mp3" },
+                { title: "Gymnopedie No 1", url: "https://files.freemusicarchive.org/storage-freemusicarchive-org/music/no_curator/Kevin_MacLeod/Classical/Kevin_MacLeod_-_Gymnopedie_No_1.mp3" },
+                { title: "Life of Riley", url: "https://files.freemusicarchive.org/storage-freemusicarchive-org/music/no_curator/Kevin_MacLeod/Impact/Kevin_MacLeod_-_Life_of_Riley.mp3" },
+                { title: "Married Life", url: "https://files.freemusicarchive.org/storage-freemusicarchive-org/music/no_curator/Kevin_MacLeod/Impact/Kevin_MacLeod_-_Married_Life.mp3" },
+                { title: "Wallpaper", url: "https://files.freemusicarchive.org/storage-freemusicarchive-org/music/no_curator/Kevin_MacLeod/Impact/Kevin_MacLeod_-_Wallpaper.mp3" },
+                { title: "George Street Shuffle", url: "https://files.freemusicarchive.org/storage-freemusicarchive-org/music/no_curator/Kevin_MacLeod/Jazz/Kevin_MacLeod_-_George_Street_Shuffle.mp3" }
             ];
             
             let currentTrackIndex = 0;
@@ -1588,12 +1554,23 @@
             // Play music
             function playMusic() {
                 backgroundMusic.volume = 0.15;
-                backgroundMusic.play().then(() => {
-                    isPlaying = true;
-                    playPauseBtn.textContent = '⏸';
-                }).catch(function(error) {
-                    console.log('Play prevented:', error);
-                });
+                const playPromise = backgroundMusic.play();
+                
+                if (playPromise !== undefined) {
+                    playPromise.then(() => {
+                        isPlaying = true;
+                        playPauseBtn.textContent = '⏸';
+                        console.log('Music started playing');
+                    }).catch(function(error) {
+                        console.log('Play prevented:', error);
+                        // Show user-friendly message
+                        playPauseBtn.textContent = '▶';
+                        playPauseBtn.style.backgroundColor = '#ff6b6b';
+                        setTimeout(() => {
+                            playPauseBtn.style.backgroundColor = '#ff69b4';
+                        }, 1000);
+                    });
+                }
             }
             
             // Pause music
@@ -1643,6 +1620,7 @@
             // Try to play music when user first interacts with the page
             function playBackgroundMusic() {
                 if (!isPlaying) {
+                    console.log('Attempting to play background music...');
                     playMusic();
                 }
             }
@@ -1655,7 +1633,16 @@
             // Also try to play music when welcome button is clicked
             document.addEventListener('click', function(e) {
                 if (e.target.classList.contains('welcome-button')) {
+                    console.log('Welcome button clicked, trying to play music...');
                     setTimeout(playBackgroundMusic, 100);
+                }
+            });
+            
+            // Try to play music when any button is clicked
+            document.addEventListener('click', function(e) {
+                if (e.target.tagName === 'BUTTON' && !isPlaying) {
+                    console.log('Button clicked, trying to play music...');
+                    setTimeout(playBackgroundMusic, 50);
                 }
             });
         });
