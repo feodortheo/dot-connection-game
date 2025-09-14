@@ -2,6 +2,7 @@
 
 
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -1616,7 +1617,7 @@
 
     <!-- Victory Screen -->
     <div class="victory-screen" id="victoryScreen">
-        <button class="restart-btn" onclick="showStatsScreen()">Показать статистику</button>
+        <!-- Victory screen is now automatically redirected to stats -->
     </div>
 
     <!-- Statistics Screen -->
@@ -2359,10 +2360,8 @@
         }
 
         function showVictoryScreen() {
-            // Hide game screen and show victory screen
-            showScreen('victory');
-            createVictoryTexts();
-            startHeartAnimation();
+            // Skip victory screen and go directly to statistics
+            showStatsScreen();
         }
         
         function createVictoryTexts() {
