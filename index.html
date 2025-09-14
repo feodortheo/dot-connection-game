@@ -1388,9 +1388,9 @@
 </head>
 <body>
     <!-- Background Music -->
-    <audio id="backgroundMusic" loop preload="auto" crossorigin="anonymous">
-        <source src="https://files.freemusicarchive.org/storage-freemusicarchive-org/music/no_curator/Kevin_MacLeod/Impact/Kevin_MacLeod_-_Heartbreaking.mp3" type="audio/mpeg">
-        <source src="https://archive.org/download/Kevin_MacLeod_-_Heartbreaking/Kevin_MacLeod_-_Heartbreaking.mp3" type="audio/mpeg">
+    <audio id="backgroundMusic" loop preload="auto">
+        <source src="https://www.bensound.com/bensound-music/bensound-pianomoment.mp3" type="audio/mpeg">
+        <source src="https://www.bensound.com/bensound-music/bensound-pianomoment.ogg" type="audio/ogg">
         Your browser does not support the audio element.
     </audio>
     
@@ -1402,7 +1402,7 @@
             <button id="playPause" class="music-btn">▶</button>
             <button id="nextTrack" class="music-btn">⏭</button>
             <div class="track-info">
-                <span id="trackTitle">Heartbreaking</span>
+                <span id="trackTitle">Piano Moment</span>
             </div>
         </div>
     </div>
@@ -1511,18 +1511,18 @@
             const nextTrackBtn = document.getElementById('nextTrack');
             const trackTitle = document.getElementById('trackTitle');
             
-            // Free romantic and calm music tracks from reliable sources
+            // Simple and reliable music tracks
             const musicTracks = [
-                { title: "Heartbreaking", url: "https://files.freemusicarchive.org/storage-freemusicarchive-org/music/no_curator/Kevin_MacLeod/Impact/Kevin_MacLeod_-_Heartbreaking.mp3" },
-                { title: "Carefree", url: "https://files.freemusicarchive.org/storage-freemusicarchive-org/music/no_curator/Kevin_MacLeod/Impact/Kevin_MacLeod_-_Carefree.mp3" },
-                { title: "A New Beginning", url: "https://files.freemusicarchive.org/storage-freemusicarchive-org/music/no_curator/Kevin_MacLeod/Impact/Kevin_MacLeod_-_A_New_Beginning.mp3" },
-                { title: "Amazing Grace", url: "https://files.freemusicarchive.org/storage-freemusicarchive-org/music/no_curator/Kevin_MacLeod/Classical/Kevin_MacLeod_-_Amazing_Grace.mp3" },
-                { title: "Canon in D Major", url: "https://files.freemusicarchive.org/storage-freemusicarchive-org/music/no_curator/Kevin_MacLeod/Classical/Kevin_MacLeod_-_Canon_in_D_Major.mp3" },
-                { title: "Gymnopedie No 1", url: "https://files.freemusicarchive.org/storage-freemusicarchive-org/music/no_curator/Kevin_MacLeod/Classical/Kevin_MacLeod_-_Gymnopedie_No_1.mp3" },
-                { title: "Life of Riley", url: "https://files.freemusicarchive.org/storage-freemusicarchive-org/music/no_curator/Kevin_MacLeod/Impact/Kevin_MacLeod_-_Life_of_Riley.mp3" },
-                { title: "Married Life", url: "https://files.freemusicarchive.org/storage-freemusicarchive-org/music/no_curator/Kevin_MacLeod/Impact/Kevin_MacLeod_-_Married_Life.mp3" },
-                { title: "Wallpaper", url: "https://files.freemusicarchive.org/storage-freemusicarchive-org/music/no_curator/Kevin_MacLeod/Impact/Kevin_MacLeod_-_Wallpaper.mp3" },
-                { title: "George Street Shuffle", url: "https://files.freemusicarchive.org/storage-freemusicarchive-org/music/no_curator/Kevin_MacLeod/Jazz/Kevin_MacLeod_-_George_Street_Shuffle.mp3" }
+                { title: "Piano Moment", url: "https://www.bensound.com/bensound-music/bensound-pianomoment.mp3" },
+                { title: "Peaceful", url: "https://www.bensound.com/bensound-music/bensound-peaceful.mp3" },
+                { title: "Gentle", url: "https://www.bensound.com/bensound-music/bensound-gentle.mp3" },
+                { title: "Sweet", url: "https://www.bensound.com/bensound-music/bensound-sweet.mp3" },
+                { title: "Tender", url: "https://www.bensound.com/bensound-music/bensound-tender.mp3" },
+                { title: "Soft", url: "https://www.bensound.com/bensound-music/bensound-soft.mp3" },
+                { title: "Heart", url: "https://www.bensound.com/bensound-music/bensound-heart.mp3" },
+                { title: "Moonlight", url: "https://www.bensound.com/bensound-music/bensound-moonlight.mp3" },
+                { title: "Ocean", url: "https://www.bensound.com/bensound-music/bensound-ocean.mp3" },
+                { title: "Forest", url: "https://www.bensound.com/bensound-music/bensound-forest.mp3" }
             ];
             
             let currentTrackIndex = 0;
