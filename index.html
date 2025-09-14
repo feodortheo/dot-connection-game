@@ -1793,6 +1793,9 @@
             currentTrackIndex = getRandomTrackIndex();
             loadTrack(currentTrackIndex);
             
+            // Initialize UI
+            updateMusicPlayerUI();
+            
             // Try to play music when user first interacts with the page
             function playBackgroundMusic() {
                 if (!isPlaying) {
@@ -1802,7 +1805,7 @@
                         loadTrack(currentTrackIndex);
                     }
                     setTimeout(() => {
-                    playMusic();
+                        playMusic();
                     }, 200);
                 }
             }
@@ -3011,6 +3014,8 @@
             updateDotPositions();
             // Check if fighters are ready (names only, photos optional)
             checkFightersReady();
+            // Initialize music system
+            console.log('Page loaded, music system ready');
         });
     </script>
 </body>
