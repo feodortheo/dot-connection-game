@@ -1514,7 +1514,7 @@
             const nextTrackBtn = document.getElementById('nextTrack');
             const trackTitle = document.getElementById('trackTitle');
             
-            // 50 romantic and relaxing music tracks
+            // Only romantic and relaxing music tracks (no watermarks, no active music)
             const musicTracks = [
                 { title: "Момент пианино", url: "https://www.bensound.com/bensound-music/bensound-pianomoment.mp3" },
                 { title: "Мирный разум", url: "https://www.bensound.com/bensound-music/bensound-peaceful.mp3" },
@@ -1526,49 +1526,16 @@
                 { title: "Лунная романтика", url: "https://www.bensound.com/bensound-music/bensound-moonlight.mp3" },
                 { title: "Океанская безмятежность", url: "https://www.bensound.com/bensound-music/bensound-ocean.mp3" },
                 { title: "Лесная гармония", url: "https://www.bensound.com/bensound-music/bensound-forest.mp3" },
-                { title: "Утренняя радость", url: "https://www.bensound.com/bensound-music/bensound-morning.mp3" },
                 { title: "Вечерняя романтика", url: "https://www.bensound.com/bensound-music/bensound-evening.mp3" },
-                { title: "Весенняя любовь", url: "https://www.bensound.com/bensound-music/bensound-summer.mp3" },
-                { title: "Золотая осень", url: "https://www.bensound.com/bensound-music/bensound-autumn.mp3" },
-                { title: "Зимнее чудо", url: "https://www.bensound.com/bensound-music/bensound-winter.mp3" },
                 { title: "Кристальная любовь", url: "https://www.bensound.com/bensound-music/bensound-crystal.mp3" },
                 { title: "Золотой час", url: "https://www.bensound.com/bensound-music/bensound-golden.mp3" },
                 { title: "Серебряная романтика", url: "https://www.bensound.com/bensound-music/bensound-silver.mp3" },
                 { title: "Голубая романтика", url: "https://www.bensound.com/bensound-music/bensound-blue.mp3" },
-                { title: "Зелёный рай", url: "https://www.bensound.com/bensound-music/bensound-green.mp3" },
                 { title: "Белая романтика", url: "https://www.bensound.com/bensound-music/bensound-white.mp3" },
-                { title: "Элегантная любовь", url: "https://www.bensound.com/bensound-music/bensound-black.mp3" },
                 { title: "Розовая романтика", url: "https://www.bensound.com/bensound-music/bensound-pink.mp3" },
-                { title: "Оранжевая радость", url: "https://www.bensound.com/bensound-music/bensound-orange.mp3" },
-                { title: "Жёлтое счастье", url: "https://www.bensound.com/bensound-music/bensound-yellow.mp3" },
-                { title: "Индиго романтика", url: "https://www.bensound.com/bensound-music/bensound-indigo.mp3" },
-                { title: "Бирюзовая любовь", url: "https://www.bensound.com/bensound-music/bensound-turquoise.mp3" },
-                { title: "Коралловая романтика", url: "https://www.bensound.com/bensound-music/bensound-coral.mp3" },
                 { title: "Лавандовая любовь", url: "https://www.bensound.com/bensound-music/bensound-lavender.mp3" },
-                { title: "Свежая мятная любовь", url: "https://www.bensound.com/bensound-music/bensound-mint.mp3" },
-                { title: "Персиковая романтика", url: "https://www.bensound.com/bensound-music/bensound-peach.mp3" },
                 { title: "Розовый сад", url: "https://www.bensound.com/bensound-music/bensound-rose.mp3" },
-                { title: "Лилейная любовь", url: "https://www.bensound.com/bensound-music/bensound-lily.mp3" },
-                { title: "Ромашковая романтика", url: "https://www.bensound.com/bensound-music/bensound-daisy.mp3" },
-                { title: "Тюльпановая любовь", url: "https://www.bensound.com/bensound-music/bensound-tulip.mp3" },
-                { title: "Подсолнечная радость", url: "https://www.bensound.com/bensound-music/bensound-sunflower.mp3" },
-                { title: "Орхидейная романтика", url: "https://www.bensound.com/bensound-music/bensound-orchid.mp3" },
-                { title: "Жасминовая любовь", url: "https://www.bensound.com/bensound-music/bensound-jasmine.mp3" },
-                { title: "Лотосовая романтика", url: "https://www.bensound.com/bensound-music/bensound-lotus.mp3" },
-                { title: "Магнолиевая любовь", url: "https://www.bensound.com/bensound-music/bensound-magnolia.mp3" },
-                { title: "Вишнёвая романтика", url: "https://www.bensound.com/bensound-music/bensound-cherry.mp3" },
-                { title: "Яблочная любовь", url: "https://www.bensound.com/bensound-music/bensound-apple.mp3" },
-                { title: "Грушевая романтика", url: "https://www.bensound.com/bensound-music/bensound-pear.mp3" },
-                { title: "Сливовая любовь", url: "https://www.bensound.com/bensound-music/bensound-plum.mp3" },
-                { title: "Виноградная романтика", url: "https://www.bensound.com/bensound-music/bensound-grape.mp3" },
-                { title: "Клубничная любовь", url: "https://www.bensound.com/bensound-music/bensound-strawberry.mp3" },
-                { title: "Малиновая романтика", url: "https://www.bensound.com/bensound-music/bensound-raspberry.mp3" },
-                { title: "Черничная любовь", url: "https://www.bensound.com/bensound-music/bensound-blueberry.mp3" },
-                { title: "Клюквенная романтика", url: "https://www.bensound.com/bensound-music/bensound-cranberry.mp3" },
-                { title: "Апельсиновая любовь", url: "https://www.bensound.com/bensound-music/bensound-orange.mp3" },
-                { title: "Лимонная романтика", url: "https://www.bensound.com/bensound-music/bensound-lemon.mp3" },
-                { title: "Лаймовая любовь", url: "https://www.bensound.com/bensound-music/bensound-lime.mp3" },
-                { title: "Грейпфрутовая романтика", url: "https://www.bensound.com/bensound-music/bensound-grapefruit.mp3" }
+                { title: "Лилейная любовь", url: "https://www.bensound.com/bensound-music/bensound-lily.mp3" }
             ];
             
             let currentTrackIndex = 0;
@@ -1635,6 +1602,15 @@
                 playPauseBtn.textContent = '▶';
             }
             
+            // Toggle play/pause
+            function togglePlayPause() {
+                if (isPlaying) {
+                    pauseMusic();
+                } else {
+                    playMusic();
+                }
+            }
+            
             // Next track (random)
             function nextTrack() {
                 currentTrackIndex = getRandomTrackIndex();
@@ -1658,19 +1634,21 @@
             }
             
             // Event listeners
-            playPauseBtn.addEventListener('click', function() {
-                if (isPlaying) {
-                    pauseMusic();
-                } else {
-                    playMusic();
-                }
-            });
-            
+            playPauseBtn.addEventListener('click', togglePlayPause);
             nextTrackBtn.addEventListener('click', nextTrack);
             prevTrackBtn.addEventListener('click', prevTrack);
             
             // Auto play next track when current ends
-            backgroundMusic.addEventListener('ended', nextTrack);
+            backgroundMusic.addEventListener('ended', function() {
+                console.log('Track ended, playing next...');
+                nextTrack();
+            });
+            
+            // Auto play next track when track fails to load
+            backgroundMusic.addEventListener('error', function() {
+                console.log('Track failed to load, trying next...');
+                nextTrack();
+            });
             
             // Initialize with random track
             currentTrackIndex = getRandomTrackIndex();
