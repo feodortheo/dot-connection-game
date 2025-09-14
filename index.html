@@ -1386,128 +1386,6 @@
             }
         }
         
-        /* AI Settings */
-        .ai-settings-btn {
-            position: fixed;
-            top: 20px;
-            left: 20px;
-            background: rgba(0, 255, 255, 0.9);
-            border: none;
-            border-radius: 25px;
-            padding: 10px 15px;
-            color: white;
-            font-size: 16px;
-            cursor: pointer;
-            z-index: 1000;
-            backdrop-filter: blur(10px);
-            box-shadow: 0 4px 15px rgba(0, 255, 255, 0.3);
-            transition: all 0.3s ease;
-        }
-        
-        .ai-settings-btn:hover {
-            background: rgba(0, 255, 255, 1);
-            transform: scale(1.05);
-        }
-        
-        .ai-settings-panel {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: rgba(0, 0, 0, 0.95);
-            border: 2px solid #00ffff;
-            border-radius: 20px;
-            padding: 30px;
-            z-index: 2000;
-            backdrop-filter: blur(20px);
-            box-shadow: 0 10px 30px rgba(0, 255, 255, 0.3);
-            max-width: 500px;
-            width: 90%;
-        }
-        
-        .ai-settings-content h3 {
-            color: #00ffff;
-            margin-bottom: 20px;
-            text-align: center;
-        }
-        
-        .ai-settings-content p {
-            color: #fff;
-            margin-bottom: 15px;
-            text-align: center;
-        }
-        
-        .api-key-input {
-            width: 100%;
-            padding: 12px;
-            border: 2px solid #00ffff;
-            border-radius: 10px;
-            background: rgba(255, 255, 255, 0.1);
-            color: white;
-            font-size: 16px;
-            margin-bottom: 20px;
-        }
-        
-        .api-key-input::placeholder {
-            color: rgba(255, 255, 255, 0.5);
-        }
-        
-        .ai-settings-buttons {
-            display: flex;
-            gap: 10px;
-            justify-content: center;
-            flex-wrap: wrap;
-        }
-        
-        .ai-btn {
-            background: #00ffff;
-            border: none;
-            border-radius: 10px;
-            padding: 10px 20px;
-            color: #000;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-        
-        .ai-btn:hover {
-            background: #00cccc;
-            transform: scale(1.05);
-        }
-        
-        .declension-test {
-            margin-top: 20px;
-            padding: 20px;
-            background: rgba(0, 255, 255, 0.1);
-            border-radius: 10px;
-            border: 1px solid #00ffff;
-        }
-        
-        .declension-test h4 {
-            color: #00ffff;
-            margin-bottom: 15px;
-        }
-        
-        .test-name-input {
-            width: 100%;
-            padding: 10px;
-            border: 2px solid #00ffff;
-            border-radius: 8px;
-            background: rgba(255, 255, 255, 0.1);
-            color: white;
-            font-size: 14px;
-            margin-bottom: 15px;
-        }
-        
-        .test-results {
-            color: #fff;
-            font-size: 14px;
-            line-height: 1.6;
-        }
-        
-        .test-results strong {
-            color: #00ffff;
-        }
     </style>
 </head>
 <body>
@@ -1531,27 +1409,6 @@
         </div>
     </div>
     
-    <!-- AI Settings Panel -->
-    <div id="aiSettingsPanel" class="ai-settings-panel" style="display: none;">
-        <div class="ai-settings-content">
-            <h3>🤖 Настройки ИИ для склонения имен</h3>
-            <p>Для использования ИИ-склонения введите ваш OpenAI API ключ:</p>
-            <input type="password" id="openaiApiKey" placeholder="sk-..." class="api-key-input">
-            <div class="ai-settings-buttons">
-                <button id="saveApiKey" class="ai-btn">Сохранить</button>
-                <button id="testDeclension" class="ai-btn">Тест склонения</button>
-                <button id="closeAiSettings" class="ai-btn">Закрыть</button>
-            </div>
-            <div id="declensionTest" class="declension-test" style="display: none;">
-                <h4>Тест склонения:</h4>
-                <input type="text" id="testName" placeholder="Введите имя для теста" class="test-name-input">
-                <div id="testResults" class="test-results"></div>
-            </div>
-        </div>
-    </div>
-    
-    <!-- AI Settings Button -->
-    <button id="aiSettingsBtn" class="ai-settings-btn">🤖 ИИ</button>
     
     <!-- Welcome Screen -->
     <div class="welcome-screen" id="welcomeScreen">
@@ -1865,67 +1722,6 @@
                 }
             }
             
-            // AI Settings Panel functionality
-            const aiSettingsBtn = document.getElementById('aiSettingsBtn');
-            const aiSettingsPanel = document.getElementById('aiSettingsPanel');
-            const closeAiSettings = document.getElementById('closeAiSettings');
-            const saveApiKey = document.getElementById('saveApiKey');
-            const testDeclension = document.getElementById('testDeclension');
-            const openaiApiKey = document.getElementById('openaiApiKey');
-            const declensionTest = document.getElementById('declensionTest');
-            const testName = document.getElementById('testName');
-            const testResults = document.getElementById('testResults');
-            
-            // Show AI settings panel
-            aiSettingsBtn.addEventListener('click', function() {
-                aiSettingsPanel.style.display = 'block';
-                // Load saved API key if exists
-                const savedKey = localStorage.getItem('openai_api_key');
-                if (savedKey) {
-                    openaiApiKey.value = savedKey;
-                    setupAIDeclension(savedKey);
-                }
-            });
-            
-            // Close AI settings panel
-            closeAiSettings.addEventListener('click', function() {
-                aiSettingsPanel.style.display = 'none';
-            });
-            
-            // Save API key
-            saveApiKey.addEventListener('click', function() {
-                const apiKey = openaiApiKey.value.trim();
-                if (apiKey) {
-                    localStorage.setItem('openai_api_key', apiKey);
-                    setupAIDeclension(apiKey);
-                    alert('API ключ сохранен! ИИ-склонение активировано.');
-                } else {
-                    alert('Пожалуйста, введите API ключ');
-                }
-            });
-            
-            // Test declension
-            testDeclension.addEventListener('click', function() {
-                declensionTest.style.display = 'block';
-            });
-            
-            // Test name input
-            testName.addEventListener('input', function() {
-                const name = testName.value.trim();
-                if (name) {
-                    const results = `
-                        <strong>Результаты склонения для "${name}":</strong><br>
-                        Родительный (кого?): ${declineName(name, 'genitive')}<br>
-                        Дательный (кому?): ${declineName(name, 'dative')}<br>
-                        Винительный (кого?): ${declineName(name, 'accusative')}<br>
-                        Творительный (кем?): ${declineName(name, 'instrumental')}<br>
-                        Предложный (о ком?): ${declineName(name, 'prepositional')}
-                    `;
-                    testResults.innerHTML = results;
-                } else {
-                    testResults.innerHTML = '';
-                }
-            });
         });
 
         let currentDistance = 20; // Total path length starts at 20
@@ -1946,203 +1742,24 @@
             player2: { correct: 0, total: 0, name: '' }
         };
 
-        // AI-powered name declension system
-        class NameDeclensionAI {
-            constructor() {
-                this.cache = new Map(); // Cache for declensions
-                this.apiKey = null; // Will be set if available
-            }
-            
-            // Set API key for OpenAI (optional)
-            setApiKey(key) {
-                this.apiKey = key;
-            }
-            
-            // AI-powered declension using OpenAI API
-            async declineNameWithAI(name, caseType = 'genitive') {
-                if (!name) return name;
-                
-                // Check cache first
-                const cacheKey = `${name}_${caseType}`;
-                if (this.cache.has(cacheKey)) {
-                    return this.cache.get(cacheKey);
-                }
-                
-                // If no API key, fall back to rule-based system
-                if (!this.apiKey) {
-                    return this.declineNameRuleBased(name, caseType);
-                }
-                
-                try {
-                    const response = await fetch('https://api.openai.com/v1/chat/completions', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Authorization': `Bearer ${this.apiKey}`
-                        },
-                        body: JSON.stringify({
-                            model: 'gpt-3.5-turbo',
-                            messages: [{
-                                role: 'system',
-                                content: 'Ты эксперт по русской грамматике. Склоняй имена правильно по падежам.'
-                            }, {
-                                role: 'user',
-                                content: `Склонни имя "${name}" в ${this.getCaseDescription(caseType)}. Ответь только склоненным именем, без объяснений.`
-                            }],
-                            max_tokens: 50,
-                            temperature: 0.1
-                        })
-                    });
-                    
-                    if (response.ok) {
-                        const data = await response.json();
-                        const declinedName = data.choices[0].message.content.trim();
-                        this.cache.set(cacheKey, declinedName);
-                        return declinedName;
-                    }
-                } catch (error) {
-                    console.log('AI declension failed, using rule-based:', error);
-                }
-                
-                // Fallback to rule-based system
-                return this.declineNameRuleBased(name, caseType);
-            }
-            
-            // Rule-based declension (fallback)
-            declineNameRuleBased(name, caseType = 'genitive') {
-                if (!name || name.length < 2) return name;
-                
-                const nameLower = name.toLowerCase();
-                const lastChar = nameLower.slice(-1);
-                const secondLastChar = nameLower.slice(-2, -1);
-                
-                // Simple declension rules for common Russian names
-                switch (caseType) {
-                    case 'genitive': // кого? чего?
-                        if (lastChar === 'а' || lastChar === 'я') {
-                            return name.slice(0, -1) + (lastChar === 'а' ? 'ы' : 'и');
-                        } else if (lastChar === 'ь' || lastChar === 'й') {
-                            return name.slice(0, -1) + 'я';
-                        } else if (lastChar === 'о' || lastChar === 'е') {
-                            return name.slice(0, -1) + 'а';
-                        } else {
-                            return name + 'а';
-                        }
-                    case 'dative': // кому? чему?
-                        if (lastChar === 'а' || lastChar === 'я') {
-                            return name.slice(0, -1) + (lastChar === 'а' ? 'е' : 'е');
-                        } else if (lastChar === 'ь' || lastChar === 'й') {
-                            return name.slice(0, -1) + 'ю';
-                        } else if (lastChar === 'о' || lastChar === 'е') {
-                            return name.slice(0, -1) + 'у';
-                        } else {
-                            return name + 'у';
-                        }
-                    case 'accusative': // кого? что?
-                        if (lastChar === 'а' || lastChar === 'я') {
-                            return name.slice(0, -1) + (lastChar === 'а' ? 'у' : 'ю');
-                        } else if (lastChar === 'ь' || lastChar === 'й') {
-                            return name.slice(0, -1) + 'я';
-                        } else if (lastChar === 'о' || lastChar === 'е') {
-                            return name.slice(0, -1) + 'о';
-                        } else {
-                            return name + 'а';
-                        }
-                    case 'instrumental': // кем? чем?
-                        if (lastChar === 'а' || lastChar === 'я') {
-                            return name.slice(0, -1) + (lastChar === 'а' ? 'ой' : 'ей');
-                        } else if (lastChar === 'ь' || lastChar === 'й') {
-                            return name.slice(0, -1) + 'ем';
-                        } else if (lastChar === 'о' || lastChar === 'е') {
-                            return name.slice(0, -1) + 'ом';
-                        } else {
-                            return name + 'ом';
-                        }
-                    case 'prepositional': // о ком? о чём?
-                        if (lastChar === 'а' || lastChar === 'я') {
-                            return name.slice(0, -1) + (lastChar === 'а' ? 'е' : 'е');
-                        } else if (lastChar === 'ь' || lastChar === 'й') {
-                            return name.slice(0, -1) + 'е';
-                        } else if (lastChar === 'о' || lastChar === 'е') {
-                            return name.slice(0, -1) + 'е';
-                        } else {
-                            return name + 'е';
-                        }
-                    default:
-                        return name;
-                }
-            }
-            
-            // Get case description in Russian
-            getCaseDescription(caseType) {
-                const descriptions = {
-                    'genitive': 'родительный падеж (кого? чего?)',
-                    'dative': 'дательный падеж (кому? чему?)',
-                    'accusative': 'винительный падеж (кого? что?)',
-                    'instrumental': 'творительный падеж (кем? чем?)',
-                    'prepositional': 'предложный падеж (о ком? о чём?)'
-                };
-                return descriptions[caseType] || 'родительный падеж';
-            }
-            
-            // Synchronous declension (uses rule-based system)
-            declineName(name, caseType = 'genitive') {
-                return this.declineNameRuleBased(name, caseType);
-            }
-        }
-        
-        // Create global AI declension instance
-        const nameDeclensionAI = new NameDeclensionAI();
-        
-        // Legacy function for backward compatibility
-        function declineName(name, caseType = 'genitive') {
-            return nameDeclensionAI.declineName(name, caseType);
-        }
 
-        // Function to replace "партнёр" with properly declined name
+        // Function to replace "партнёр" with name in nominative case
         function personalizeQuestion(question, name) {
             if (!name) return question;
             
-            // Replace different forms of "партнёр" with properly declined name
+            // Replace all forms of "партнёр" with name in nominative case
             let personalizedQuestion = question;
             
-            // Replace "партнёр" (nominative) with name in nominative
+            // Replace all variations with the same name (nominative)
             personalizedQuestion = personalizedQuestion.replace(/партнёр/g, name);
-            
-            // Replace "партнёра" (genitive/accusative) with declined name
-            personalizedQuestion = personalizedQuestion.replace(/партнёра/g, declineName(name, 'genitive'));
-            
-            // Replace "партнёру" (dative) with declined name
-            personalizedQuestion = personalizedQuestion.replace(/партнёру/g, declineName(name, 'dative'));
-            
-            // Replace "партнёром" (instrumental) with declined name
-            personalizedQuestion = personalizedQuestion.replace(/партнёром/g, declineName(name, 'instrumental'));
-            
-            // Replace "партнёре" (prepositional) with declined name
-            personalizedQuestion = personalizedQuestion.replace(/партнёре/g, declineName(name, 'prepositional'));
+            personalizedQuestion = personalizedQuestion.replace(/партнёра/g, name);
+            personalizedQuestion = personalizedQuestion.replace(/партнёру/g, name);
+            personalizedQuestion = personalizedQuestion.replace(/партнёром/g, name);
+            personalizedQuestion = personalizedQuestion.replace(/партнёре/g, name);
             
             return personalizedQuestion;
         }
         
-        // Function to set up AI declension (call this if you have OpenAI API key)
-        function setupAIDeclension(apiKey) {
-            if (apiKey) {
-                nameDeclensionAI.setApiKey(apiKey);
-                console.log('AI declension enabled with OpenAI API');
-            } else {
-                console.log('AI declension using rule-based system (no API key provided)');
-            }
-        }
-        
-        // Function to test declension
-        function testDeclension(name) {
-            console.log(`Testing declension for: ${name}`);
-            console.log(`Genitive: ${declineName(name, 'genitive')}`);
-            console.log(`Dative: ${declineName(name, 'dative')}`);
-            console.log(`Accusative: ${declineName(name, 'accusative')}`);
-            console.log(`Instrumental: ${declineName(name, 'instrumental')}`);
-            console.log(`Prepositional: ${declineName(name, 'prepositional')}`);
-        }
         
         // Array of deep personal questions
         const questions = [
