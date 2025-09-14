@@ -1677,8 +1677,98 @@
             player1: { correct: 0, total: 0, name: '' },
             player2: { correct: 0, total: 0, name: '' }
         };
+
+        // Function to decline names properly in Russian
+        function declineName(name, caseType = 'genitive') {
+            if (!name || name.length < 2) return name;
+            
+            const nameLower = name.toLowerCase();
+            const lastChar = nameLower.slice(-1);
+            const secondLastChar = nameLower.slice(-2, -1);
+            
+            // Simple declension rules for common Russian names
+            switch (caseType) {
+                case 'genitive': // кого? чего?
+                    if (lastChar === 'а' || lastChar === 'я') {
+                        return name.slice(0, -1) + (lastChar === 'а' ? 'ы' : 'и');
+                    } else if (lastChar === 'ь' || lastChar === 'й') {
+                        return name.slice(0, -1) + 'я';
+                    } else if (lastChar === 'о' || lastChar === 'е') {
+                        return name.slice(0, -1) + 'а';
+                    } else {
+                        return name + 'а';
+                    }
+                case 'dative': // кому? чему?
+                    if (lastChar === 'а' || lastChar === 'я') {
+                        return name.slice(0, -1) + (lastChar === 'а' ? 'е' : 'е');
+                    } else if (lastChar === 'ь' || lastChar === 'й') {
+                        return name.slice(0, -1) + 'ю';
+                    } else if (lastChar === 'о' || lastChar === 'е') {
+                        return name.slice(0, -1) + 'у';
+                    } else {
+                        return name + 'у';
+                    }
+                case 'accusative': // кого? что?
+                    if (lastChar === 'а' || lastChar === 'я') {
+                        return name.slice(0, -1) + (lastChar === 'а' ? 'у' : 'ю');
+                    } else if (lastChar === 'ь' || lastChar === 'й') {
+                        return name.slice(0, -1) + 'я';
+                    } else if (lastChar === 'о' || lastChar === 'е') {
+                        return name.slice(0, -1) + 'о';
+                    } else {
+                        return name + 'а';
+                    }
+                case 'instrumental': // кем? чем?
+                    if (lastChar === 'а' || lastChar === 'я') {
+                        return name.slice(0, -1) + (lastChar === 'а' ? 'ой' : 'ей');
+                    } else if (lastChar === 'ь' || lastChar === 'й') {
+                        return name.slice(0, -1) + 'ем';
+                    } else if (lastChar === 'о' || lastChar === 'е') {
+                        return name.slice(0, -1) + 'ом';
+                    } else {
+                        return name + 'ом';
+                    }
+                case 'prepositional': // о ком? о чём?
+                    if (lastChar === 'а' || lastChar === 'я') {
+                        return name.slice(0, -1) + (lastChar === 'а' ? 'е' : 'е');
+                    } else if (lastChar === 'ь' || lastChar === 'й') {
+                        return name.slice(0, -1) + 'е';
+                    } else if (lastChar === 'о' || lastChar === 'е') {
+                        return name.slice(0, -1) + 'е';
+                    } else {
+                        return name + 'е';
+                    }
+                default:
+                    return name;
+            }
+        }
+
+        // Function to replace "партнёр" with properly declined name
+        function personalizeQuestion(question, name) {
+            if (!name) return question;
+            
+            // Replace different forms of "партнёр" with properly declined name
+            let personalizedQuestion = question;
+            
+            // Replace "партнёр" (nominative) with name in nominative
+            personalizedQuestion = personalizedQuestion.replace(/партнёр/g, name);
+            
+            // Replace "партнёра" (genitive/accusative) with declined name
+            personalizedQuestion = personalizedQuestion.replace(/партнёра/g, declineName(name, 'genitive'));
+            
+            // Replace "партнёру" (dative) with declined name
+            personalizedQuestion = personalizedQuestion.replace(/партнёру/g, declineName(name, 'dative'));
+            
+            // Replace "партнёром" (instrumental) with declined name
+            personalizedQuestion = personalizedQuestion.replace(/партнёром/g, declineName(name, 'instrumental'));
+            
+            // Replace "партнёре" (prepositional) with declined name
+            personalizedQuestion = personalizedQuestion.replace(/партнёре/g, declineName(name, 'prepositional'));
+            
+            return personalizedQuestion;
+        }
         
-        // Array of absurd Russian questions
+        // Array of deep personal questions
         const questions = [
             "Если бы партнёр был овощем, то каким именно и как бы он умер?",
             "Что бы выбрал партнёр: всю жизнь чихать блёстками или рыгать радугой?",
@@ -2397,8 +2487,8 @@
             const currentName = currentQuestionIndex % 2 === 0 ? fighterNames.name1 : fighterNames.name2;
             currentQuestionIndex++;
             
-            // Replace "партнёр" with the actual name
-            const personalizedQuestion = newQuestion.replace(/партнёр/g, currentName);
+            // Replace "партнёр" with the actual name using proper declension
+            const personalizedQuestion = personalizeQuestion(newQuestion, currentName);
             
             // Clear any existing fade timeout to ensure consistent timing
             if (headerFadeTimeout) {
