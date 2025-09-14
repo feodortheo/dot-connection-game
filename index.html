@@ -1388,22 +1388,23 @@
         
         /* Pack Selection Screen */
         .pack-selection-screen {
-            display: none;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            background-color: #000;
-            padding: 20px;
+            display: none !important;
+            flex-direction: column !important;
+            justify-content: center !important;
+            align-items: center !important;
+            min-height: 100vh !important;
+            background-color: #000000 !important;
+            background: #000000 !important;
+            padding: 20px !important;
         }
         
         .pack-selection-title {
-            font-size: 2.5rem;
-            font-weight: bold;
-            color: #fff;
-            margin-bottom: 50px;
-            text-align: center;
-            text-shadow: 0 0 20px rgba(255, 105, 180, 0.5);
+            font-size: 2.5rem !important;
+            font-weight: bold !important;
+            color: #ffffff !important;
+            margin-bottom: 50px !important;
+            text-align: center !important;
+            text-shadow: 0 0 20px rgba(255, 105, 180, 0.5) !important;
         }
         
         .packs-container {
@@ -1416,19 +1417,20 @@
         }
         
         .pack-card {
-            background: linear-gradient(135deg, #ff69b4 0%, #ff1493 100%);
-            border-radius: 20px;
-            padding: 40px 30px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 10px 30px rgba(255, 105, 180, 0.3);
-            backdrop-filter: blur(10px);
-            border: 2px solid transparent;
-            min-width: 300px;
-            max-width: 350px;
-            position: relative;
-            overflow: hidden;
+            background: linear-gradient(135deg, #ff69b4 0%, #ff1493 100%) !important;
+            background-color: #ff69b4 !important;
+            border-radius: 20px !important;
+            padding: 40px 30px !important;
+            text-align: center !important;
+            cursor: pointer !important;
+            transition: all 0.3s ease !important;
+            box-shadow: 0 10px 30px rgba(255, 105, 180, 0.3) !important;
+            backdrop-filter: blur(10px) !important;
+            border: 2px solid transparent !important;
+            min-width: 300px !important;
+            max-width: 350px !important;
+            position: relative !important;
+            overflow: hidden !important;
         }
         
         .pack-card::before {
@@ -1462,22 +1464,22 @@
         }
         
         .pack-name {
-            font-size: 2rem;
-            font-weight: bold;
-            color: #fff;
-            margin-bottom: 15px;
-            text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
-            position: relative;
-            z-index: 1;
+            font-size: 2rem !important;
+            font-weight: bold !important;
+            color: #ffffff !important;
+            margin-bottom: 15px !important;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.3) !important;
+            position: relative !important;
+            z-index: 1 !important;
         }
         
         .pack-description {
-            font-size: 1.1rem;
-            color: rgba(255, 255, 255, 0.9);
-            line-height: 1.6;
-            text-shadow: 0 0 5px rgba(255, 255, 255, 0.2);
-            position: relative;
-            z-index: 1;
+            font-size: 1.1rem !important;
+            color: rgba(255, 255, 255, 0.9) !important;
+            line-height: 1.6 !important;
+            text-shadow: 0 0 5px rgba(255, 255, 255, 0.2) !important;
+            position: relative !important;
+            z-index: 1 !important;
         }
         
         @media (max-width: 768px) {
@@ -1566,7 +1568,6 @@
 
     <!-- Question Pack Selection Screen -->
     <div class="pack-selection-screen" id="packSelectionScreen">
-        <div class="pack-selection-title">Выберите пакет вопросов</div>
         <div class="packs-container">
             <div class="pack-card" onclick="selectPack('mix')">
                 <div class="pack-icon">🎯</div>
