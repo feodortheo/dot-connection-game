@@ -1694,20 +1694,12 @@
                 return randomIndex;
             }
 
-            // Load current track with error handling
+            // Load current track
             function loadTrack(index) {
                 const track = musicTracks[index];
                 backgroundMusic.src = track.url;
                 trackTitle.textContent = track.title;
-                
-                // Add error handling for failed track loading
-                backgroundMusic.addEventListener('error', function() {
-                    console.log(`Failed to load track: ${track.title}`);
-                    // Try next track if current fails
-                    setTimeout(() => {
-                        nextTrack();
-                    }, 1000);
-                }, { once: true });
+                console.log(`Loading track: ${track.title}`);
             }
             
             // Play music with better error handling
@@ -1724,9 +1716,9 @@
                         console.log(`Now playing: ${musicTracks[currentTrackIndex].title}`);
                 }).catch(function(error) {
                     console.log('Play prevented:', error);
-                        // Try to load and play next track
-                        console.log('Trying next track...');
-                        nextTrack();
+                        isPlaying = false;
+                        playPauseBtn.textContent = '▶';
+                        // Don't auto-switch tracks on play error, let user try again
                 });
                 }
             }
@@ -1754,7 +1746,7 @@
                 if (isPlaying) {
                     setTimeout(() => {
                     playMusic();
-                    }, 500); // Small delay to ensure track is loaded
+                    }, 1000); // Longer delay to ensure track is loaded
                 }
             }
             
@@ -1777,13 +1769,23 @@
             // Auto play next track when current ends
             backgroundMusic.addEventListener('ended', function() {
                 console.log('Track ended, playing next...');
-                nextTrack();
+                if (isPlaying) {
+                    nextTrack();
+                }
             });
             
-            // Auto play next track when track fails to load
+            // Auto play next track when track fails to load (with limit)
+            let errorCount = 0;
             backgroundMusic.addEventListener('error', function() {
-                console.log('Track failed to load, trying next...');
-                nextTrack();
+                errorCount++;
+                console.log(`Track failed to load (${errorCount}/3), trying next...`);
+                if (errorCount < 3 && isPlaying) {
+                    nextTrack();
+                } else if (errorCount >= 3) {
+                    console.log('Too many track errors, stopping music');
+                    pauseMusic();
+                    errorCount = 0; // Reset for next attempt
+                }
             });
             
             // Initialize with random track
