@@ -3,7 +3,7 @@
 
 <!DOCTYPE html>
 
-<html lang="en">
+<html lang="en">ая романт
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -1386,6 +1386,99 @@
             }
         }
         
+        /* Pack Selection Screen */
+        .pack-selection-screen {
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+        }
+        
+        .pack-selection-title {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: white;
+            margin-bottom: 50px;
+            text-align: center;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+        
+        .packs-container {
+            display: flex;
+            gap: 40px;
+            max-width: 800px;
+            width: 100%;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .pack-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 40px 30px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(10px);
+            border: 2px solid transparent;
+            min-width: 300px;
+            max-width: 350px;
+        }
+        
+        .pack-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            border-color: #ff69b4;
+        }
+        
+        .pack-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+        }
+        
+        .pack-name {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 15px;
+        }
+        
+        .pack-description {
+            font-size: 1.1rem;
+            color: #666;
+            line-height: 1.6;
+        }
+        
+        @media (max-width: 768px) {
+            .pack-selection-title {
+                font-size: 2rem;
+                margin-bottom: 30px;
+            }
+            
+            .packs-container {
+                flex-direction: column;
+                align-items: center;
+                gap: 20px;
+            }
+            
+            .pack-card {
+                min-width: 280px;
+                padding: 30px 20px;
+            }
+            
+            .pack-icon {
+                font-size: 3rem;
+            }
+            
+            .pack-name {
+                font-size: 1.5rem;
+            }
+        }
+        
     </style>
 </head>
 <body>
@@ -1441,6 +1534,23 @@
                 </div>
             </div>
             <button class="start-game-btn" onclick="beginGame()" id="startGameBtn" disabled>Введите имена обоих бойцов</button>
+        </div>
+    </div>
+
+    <!-- Question Pack Selection Screen -->
+    <div class="pack-selection-screen" id="packSelectionScreen">
+        <div class="pack-selection-title">Выберите пакет вопросов</div>
+        <div class="packs-container">
+            <div class="pack-card" onclick="selectPack('mix')">
+                <div class="pack-icon">🎯</div>
+                <div class="pack-name">Микс</div>
+                <div class="pack-description">В этом паке собраны вопросы из разных тем: от секса до ценностей</div>
+            </div>
+            <div class="pack-card" onclick="selectPack('erotic')">
+                <div class="pack-icon">🔥</div>
+                <div class="pack-name">Эротический</div>
+                <div class="pack-description">Откровенные вопросы о сексе, фантазиях и интимности</div>
+            </div>
         </div>
     </div>
 
@@ -1739,8 +1849,8 @@
         }
         
         
-        // Array of deep personal questions
-        const questions = [
+        // Array of deep personal questions (Mix pack)
+        const mixQuestions = [
             "Кого бы пригласил партнёр выпить пива, если бы мог пригласить любого человека из любой эпохи?",
             "Хотел бы партнёр быть очень известным? Например, как Мистер Бист?",
             "Каким представляет партнёр свой идеальный день?",
@@ -1863,6 +1973,64 @@
             "О чём партнёр больше всего жалеет?",
             "Какое самое худшее, что партнёр когда-либо делал по отношению к другому человеку? Как он относится к этому сегодня?"
         ];
+        
+        // Array of erotic questions
+        const eroticQuestions = [
+            "Какой у тебя был лучший секс в жизни и с кем это было?",
+            "Что самое привлекательное делает твоя партнёрша?",
+            "Где на твоём теле твоё любимое место, чтобы тебя трогали?",
+            "Тебя когда-нибудь ловили во время секса?",
+            "Тебя когда-нибудь видела голым та, кто не твоя партнёрша?",
+            "Какое порно ты смотрел в последний раз?",
+            "Сколько раз в неделю ты дрочишь?",
+            "Ты когда-нибудь спал с кем-то на работе?",
+            "Ты когда-нибудь случайно отправлял свои нюдсы?",
+            "Какая у тебя любимая секс-игрушка?",
+            "Ты когда-нибудь фантазировал о ком-то другой во время секса с партнёршей?",
+            "Какой у тебя сейчас «бодикаунт» (количество девушек), и каким он будет через 10 лет?",
+            "Тебе больше нравится быть сверху или снизу?",
+            "Кого бы ты хотел позвать к вам с партнёршей на тройничок?",
+            "Кого бы ты хотел, чтобы твоя партнёрша трахнула при тебе?",
+            "С кем из подруг твоей партнёрши ты бы переспал?",
+            "Если бы ты планировал ночь сексуального экстаза с партнёршей, что бы туда включил?",
+            "Назови сексуальную фантазию, о которой твоя партнёрша, возможно, не знает.",
+            "Ты бы позволил друзьям видеть твою партнёршу голой?",
+            "Твои топ-3 категории порно?",
+            "Ты бы разрешил партнёрше завести OnlyFans?",
+            "Ты бы согласился на секс вчетвером с партнёршей? Какие были бы правила?",
+            "Когда в последний раз кто-то, кроме твоей партнёрши, видел тебя голым?",
+            "Какой была бы идеальная эротическая поездка для тебя и партнёрши?",
+            "Самое сексуально дерзкое, что ты делал, и что самое дерзкое ещё хотел бы сделать?",
+            "Какое самое безумное место, где у тебя был секс?",
+            "Если бы у тебя был выбор заняться сексом втроём с любыми двумя людьми, кто бы это был и почему?",
+            "Ты когда-нибудь смотрел порно во время секса с девушкой?",
+            "Как ты относишься к поцелуям и ласкам на публике?",
+            "Какая у тебя любимая поза и почему?",
+            "Есть ли у тебя фетиш или фантазия, о которой ты никому ещё не рассказывал?",
+            "Ты когда-нибудь пробовал ролевые игры в сексе? Какая сцена была самой любимой?",
+            "Насколько для тебя важны прелюдии в постели?",
+            "Что тебя возбуждает больше — внешность, характер или что-то другое?",
+            "Если бы деньги не имели значения, каким был бы твой идеальный сексуальный опыт?",
+            "Какое самое опасное место, где ты хотел бы заняться сексом?",
+            "Как тебе нравится, чтобы тебя целовали?",
+            "Что у тебя в сексуальном «списке желаний», что обязательно хочешь попробовать в жизни?",
+            "Если бы ты мог создать идеальную девушку для себя, какой бы она была?"
+        ];
+        
+        // Current questions array (will be set based on selected pack)
+        let questions = mixQuestions;
+        
+        // Function to select question pack
+        function selectPack(packType) {
+            if (packType === 'mix') {
+                questions = mixQuestions;
+            } else if (packType === 'erotic') {
+                questions = eroticQuestions;
+            }
+            
+            // Start game with selected pack
+            startGameWithSelectedPack();
+        }
         
         function moveDots(action) {
             const dot1 = document.querySelector('.dot1');
@@ -2312,6 +2480,7 @@
             document.getElementById('welcomeScreen').style.display = 'none';
             document.getElementById('kissingScreen').style.display = 'none';
             document.getElementById('fighterScreen').style.display = 'none';
+            document.getElementById('packSelectionScreen').style.display = 'none';
             document.getElementById('gameScreen').style.display = 'none';
             document.getElementById('endScreen').style.display = 'none';
             document.getElementById('victoryScreen').style.display = 'none';
@@ -2327,6 +2496,9 @@
                     break;
                 case 'fighter':
                     document.getElementById('fighterScreen').style.display = 'flex';
+                    break;
+                case 'packSelection':
+                    document.getElementById('packSelectionScreen').style.display = 'flex';
                     break;
                 case 'game':
                     document.getElementById('gameScreen').style.display = 'flex';
@@ -2451,6 +2623,11 @@
             playerStats.player2.correct = 0;
             playerStats.player2.total = 0;
             
+            // Show pack selection screen instead of going directly to game
+            showScreen('packSelection');
+        }
+        
+        function startGameWithSelectedPack() {
             // Show mixed heart animation
             showMixedHeartAnimation();
             // Then start game
