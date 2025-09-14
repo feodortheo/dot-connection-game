@@ -2475,6 +2475,7 @@
             
             // Alternate between the two names
             const currentName = currentQuestionIndex % 2 === 0 ? fighterNames.name1 : fighterNames.name2;
+            const guessingName = currentQuestionIndex % 2 === 0 ? fighterNames.name2 : fighterNames.name1;
             currentQuestionIndex++;
             
             // Replace "партнёр" with the actual name using proper declension
@@ -2489,7 +2490,7 @@
             questionHeader.className = 'question-header'; // Remove fade-out class
             questionHeader.style.opacity = '1'; // Reset opacity
             questionHeader.style.animation = 'none'; // Reset animation
-            questionHeader.textContent = `Вопрос для ${currentName}`;
+            questionHeader.textContent = `Угадывает ${guessingName}`;
             
             // Force reflow to ensure reset is applied
             questionHeader.offsetHeight;
